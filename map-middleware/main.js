@@ -1,4 +1,12 @@
 const express = require('express');
+const app = express();
+const socketio = require('socket.io');
+//var http = require('http').Server(app);
+//var io = require('socket.io')(http);
+//io = require('socket.io')(http, { origins: '*:*'});
+
+
+
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +19,9 @@ console.log('Map file path ' + Config.mapDataFilePath);
 const port = process.argv[2] || Config.port;
 const filePath = Config.mapDataFilePath;
 
-const app = express();
+
+
+let mapFileNames = [];
 
 app.get('/', function (req, res) {
   console.log('Getting list of files');
@@ -26,7 +36,7 @@ app.get('/', function (req, res) {
       console.log('files', files);
       files = files.filter(function (el) {
         return el.toLowerCase().indexOf('.map'.toLowerCase()) > -1;
-      });  
+      });
     } catch (error) {
       console.error(error);
       res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -76,18 +86,86 @@ app.get('/:mapPageId', function (req, res) {
 });
 
 
-app.listen(port)
+const server = app.listen(port);
 console.log("server started on port " + port);
+
+const io = socketio.listen(server);
+
+let uiPool = [];
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.emit('test', 'hello friends!');
+  uiPool.push(socket);
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
+});
 
 
 /*
-// https://stackoverflow.com/questions/13698043/observe-file-changes-with-node-js
-fs.watch('somedir', function (event, filename) {
-    console.log('event is: ' + event);
-    if (filename) {
-        console.log('filename provided: ' + filename);
-    } else {
-        console.log('filename not provided');
+function addObserver(filename) {
+  const file = filePath + filename;
+  fs.watchFile(file, (curr, prev) => {
+    console.log('curr', curr);
+    console.log(`the current mtime is: ${curr.mtime}`);
+    console.log(`the previous mtime was: ${prev.mtime}`);
+    notifyUI(filename);
+  });
+}
+
+fs.readdir(filePath, (err, files) => {
+  try {
+    console.log('files', files);
+    mapFileNames = files.filter(function (el) {
+      return el.toLowerCase().indexOf('.map'.toLowerCase()) > -1;
+    });
+
+    console.log('mapFileNames', mapFileNames);
+
+    for (let i = 0; i < mapFileNames.length; i++) {
+      const filename = mapFileNames[i];
+      // add observer
+      addObserver(filename);
     }
+
+  } catch (error) {
+    console.error(error);
+  }
 });
 */
+
+
+
+function notifyUI(filename) {
+  console.log('Notifying UI about the changed map', filename);
+  if(uiPool && uiPool[0]) {
+    try {
+      uiPool[0].broadcast.emit('test', 'hello friends!');
+      console.log('sending..');
+      uiPool[0].emit('test', 'hello friends!');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+
+
+fs.watch(filePath, function (event, filename) {
+  console.log('event is: ' + event);
+  if (filename && filename.includes('.map')) {
+      console.log('Map file changed: ' + filename);
+      notifyUI(filename);
+  } else {
+      console.log('Not map file');
+  }
+});
+
+
+
+
+
+console.log('Watching map files', filePath);
+
+
