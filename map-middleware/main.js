@@ -1,10 +1,6 @@
 const express = require('express');
 const app = express();
 const socketio = require('socket.io');
-//var http = require('http').Server(app);
-//var io = require('socket.io')(http);
-//io = require('socket.io')(http, { origins: '*:*'});
-
 
 
 const url = require('url');
@@ -19,7 +15,14 @@ console.log('Map file path ' + Config.mapDataFilePath);
 const port = process.argv[2] || Config.port;
 const filePath = Config.mapDataFilePath;
 
+// Initialize servers
+const server = app.listen(port);
+console.log("HTTP server started on port " + port);
+const io = socketio.listen(server);
+console.log("Socket.io server started on port " + port);
 
+// sockets for sending notifications about the data change
+let uiPool = {};
 
 let mapFileNames = [];
 
@@ -86,23 +89,6 @@ app.get('/:mapPageId', function (req, res) {
 });
 
 
-const server = app.listen(port);
-console.log("server started on port " + port);
-
-const io = socketio.listen(server);
-
-let uiPool = [];
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.emit('test', 'hello friends!');
-  uiPool.push(socket);
-
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-
-});
-
 
 /*
 function addObserver(filename) {
@@ -137,14 +123,15 @@ fs.readdir(filePath, (err, files) => {
 */
 
 
-
 function notifyUI(filename) {
   console.log('Notifying UI about the changed map', filename);
-  if(uiPool && uiPool[0]) {
+  if(uiPool) {
     try {
-      uiPool[0].broadcast.emit('test', 'hello friends!');
       console.log('sending..');
-      uiPool[0].emit('test', 'hello friends!');
+      // Send to all
+      //uiPool[testKey].emit('map_page_changed', filename);
+      io.sockets.emit('map_page_changed', filename);
+      console.log('sent!');
     } catch (error) {
       console.error(error);
     }
@@ -162,10 +149,22 @@ fs.watch(filePath, function (event, filename) {
   }
 });
 
-
-
-
-
 console.log('Watching map files', filePath);
 
 
+
+
+
+
+io.on('connection', function(socket){
+  
+  console.log('a user connected', socket.id)
+  socket.emit('map_page_changed', 'test');
+  uiPool[socket.id] = socket;
+  testKey = socket.id;
+
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+
+});
