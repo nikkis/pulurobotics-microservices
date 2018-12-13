@@ -128,8 +128,8 @@ function notifyUI(filename) {
   if(uiPool) {
     try {
       console.log('sending..');
-      // Send to all
-      //uiPool[testKey].emit('map_page_changed', filename);
+      // Send to all instead of just one
+      //uiPool[socket.id].emit('map_page_changed', filename);
       io.sockets.emit('map_page_changed', filename);
       console.log('sent!');
     } catch (error) {
@@ -159,9 +159,8 @@ console.log('Watching map files', filePath);
 io.on('connection', function(socket){
   
   console.log('a user connected', socket.id)
-  socket.emit('map_page_changed', 'test');
+
   uiPool[socket.id] = socket;
-  testKey = socket.id;
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
