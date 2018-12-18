@@ -154,6 +154,11 @@ io.on("connection", (socket) => {
 	io.sockets.emit("command_received", {command: "go"});
     });
 
+    socket.on("go_list", (list) => {
+	console.log("Received go_list message");
+	// TODO: implement
+    });
+
     socket.on("stop", () => {
 	console.log("Received stop message");
 	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 8);
