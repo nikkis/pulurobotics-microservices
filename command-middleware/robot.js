@@ -41,7 +41,7 @@ const robot = {
     },
     
     processMessage: (message) => {
-	console.log("Robot: processMessage()");
+	console.log(`Robot: processMessage(${message.type})`);
 
 	var return_message = undefined;
 	var payload = null;
@@ -80,6 +80,7 @@ const robot = {
 	    robot.x = message.robot_x;
 	    robot.y = message.robot_y;
 	    return_message = "robot_status";
+	    payload = robotStatus();
 	    break;
 	case Msg.TYPE_INFOSTATE:
 	    robot.status = message.info_state;
