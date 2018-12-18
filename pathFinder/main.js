@@ -31,53 +31,52 @@ function cleanArea(map, position){
     const forwardStep = 50;
     let turns = 0;
 
-    Boolean obstacle = false;
+    let obstacle = false;
 
     while(1){
         while(!obstacle){
-            tmpPos += (forwardStep*cos(tmpPos.alpha),forwardStep*sin(tmpPos.alpha));
+            tmpPos.x += forwardStep*Math.cos(tmpPos.angle)
+            tmpPos.y += forwardStep*Math.sin(tmpPos.angle);
             obstacle = checkObstacle(map, tmpPos, forwardStep);
         }
 
         coordinateList.add(tmpPos);
 
+        let turnAngle;
+
         if (turns%2 == 0){
-            tmpPos = turn(-Pi/2); //Turn right 90 degrees
-            obstacle = checkObstacle(map, tmpPos, forwardStep);
-            if (obstacle) break; // Ending area covering
-
-            tmpPos += (forwardStep*cos(tmpPos.alpha),forwardStep*sin(tmpPos.alpha));
-            coordinateList.add(tmpPos);
-
-            tmpPos = turn(-Pi/2); //Turn right 90 degrees
+            turnAngle = -90; // Turn right 90 degrees
         }
-        else{
-            tmpPos = turn(Pi/2); //Turn left 90 degrees
-            obstacle = checkObstacle(map, tmpPos, forwardStep);
-            if (obstacle) break; // Ending area covering
+        else {turnAngle = 90} // Turn left 90 degrees
+        
+        tmpPos.angle += turnAngle; // Turn
+        obstacle = checkObstacle(map, tmpPos, forwardStep);
+        if (obstacle) break; // Ending area covering
 
-            tmpPos += (forwardStep*cos(tmpPos.alpha),forwardStep*sin(tmpPos.alpha));
-            coordinateList.add(tmpPos);
+        tmpPos.x += forwardStep*Math.cos(tmpPos.angle);
+        tmpPos.y += forwardStep*Math.sin(tmpPos.angle);
+        coordinateList.add(tmpPos);
 
-            tmpPos = turn(Pi/2); //Turn left 90 degrees
-        }
-        turns+=1;
+        tmpPos.angle += turnAngle; // Turn
+        
+        turns+=1; // Counter number of +-180 degrees turns
     }
 
     return coordinateList;
 }
 
-%% Returns 1 if obstacle in front of the robot
-boolean checkObstacle(map, position, radius){
-    int r = radius;
+// Returns true if obstacle in front of the robot
+function Boolean checkObstacle(map, position, radius){
+    const r = radius;
 
-    boolean obstacle = false;
+    let obstacle = false;
+    let frontObstacles = [];
 
-    %    sensorArray in robot coordinates
-    %       (X_1,Y_1) [(0,-2),(0,-1),(0,0),(0,1),(0,2)]
+    //    sensorArray in robot coordinates
+    //       (X_1,Y_1) [(0,-2),(0,-1),(0,0),(0,1),(0,2)]
 
-    % Find obstacles in front of robot: X_robot position + r*cos(alpha) +
-    % int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
+    // Find obstacles in front of robot: X_robot position + r*cos(alpha) +
+    // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
 
     if (frontObstacles.contains(1))
         obstacle = true;
