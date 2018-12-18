@@ -8,6 +8,13 @@ const robot = {
     x: undefined,
     y: undefined,
 
+    getStatus: () => {
+	return {
+	    x: robot.x,
+	    y: robot.y
+	};
+    },
+    
     processMessage: (message) => {
 	console.log("Robot: processMessage()");
 
