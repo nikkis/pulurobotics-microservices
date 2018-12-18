@@ -128,7 +128,6 @@ io.on("connection", (socket) => {
 	console.log("Received start_mapping message");
 	var cmd = Msg.encodeMessage(58, "i", 3);
 	robotSocket.write(cmd);
-	console.log(`Sent command to robot: ${cmd}`);
     });
 
     socket.on("go_straight", (x, y, mode) => {
@@ -144,13 +143,23 @@ io.on("connection", (socket) => {
 	}
 	var cmd = Msg.encodeMessage(55, "iiB", x, y, direction);
 	robotSocket.write(cmd);
-	console.log(`Sent command to robot: ${cmd}`);
     });
 
     socket.on("go", (x, y) => {
 	console.log("Received go message");
 	var cmd = Msg.encodeMessage(56, "iiB", x, y, 0);
 	robotSocket.write(cmd);
-	console.log(`Sent command to robot: ${cmd}`);
+    });
+
+    socket.on("add_obstacle", (x, y) => {
+	console.log("Received add_obstacle message");
+	var cmd = Msg.encodeMessage(60, "ii", x, y);
+	robotSocket.write(cmd);
+    });
+
+    socket.on("remove_obstacle", (x, y) => {
+	console.log("Received remove_obstacle message");
+	var cmd = Msg.encodeMessage(61, "ii", x, y);
+	robotSocket.write(cmd);
     });
 });
