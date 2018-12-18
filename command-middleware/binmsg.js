@@ -260,11 +260,16 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_ROBOTINFO:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
-	message.robot_size_x = data.readIntBE(0, 2);
-	message.robot_size_y = data.readIntBE(2, 2);
-	message.lidar_offset_x = data.readIntBE(4, 2);
-	message.lidar_offset_y = data.readIntBE(6, 2);
+	try {
+	    console.log(`Opcode ${opcode} not verified.`);
+	    message.robot_size_x = data.readIntBE(0, 2);
+	    message.robot_size_y = data.readIntBE(2, 2);
+	    message.lidar_offset_x = data.readIntBE(4, 2);
+	    message.lidar_offset_y = data.readIntBE(6, 2);
+	} catch (err) {
+	    console.warn("Error while parsing robot info");
+	    console.warn(err);
+	}
 	break;
     case TYPE_PICTURE:
 	console.log(`Opcode ${opcode} not verified.`);
