@@ -38,7 +38,7 @@ const STATE_VECT_LENGTH = 16;
 * @data {...*} - A variable number of arguments with the data.
 * @returns A Buffer with the encoded message.
 */
-function encodeBinaryMessage() {
+function encodeMessage() {
     assert(arguments.length >= 1, "Must specify at least a message opcode");
     
     var opcode = arguments[0];
@@ -403,6 +403,6 @@ module.exports = {
     TYPE_ROUTE_STATUS,
     TYPE_STATEVECT,
     TYPE_LOCALIZATION_RESULT,
-    encodeBinaryMessage,
+    encodeMessage,
     decodeMessage
 }
