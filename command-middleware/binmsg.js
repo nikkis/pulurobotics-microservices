@@ -400,6 +400,13 @@ function decodeMessage(msgdata) {
 }
 
 module.exports = {
+    TYPE_DEST,
+    TYPE_ROUTE,
+    TYPE_CHARGE,
+    TYPE_MODE,
+    TYPE_MANU,
+    TYPE_ADDCONSTRAINT,
+    TYPE_REMCONSTRAINT,
     TYPE_POS,
     TYPE_LIDAR_LOWRES,
     TYPE_DBG,
