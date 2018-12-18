@@ -126,7 +126,7 @@ io.on("connection", (socket) => {
 
     socket.on("start_mapping", () => {
 	console.log("Received start_mapping message");
-	var cmd = Msg.encodeMessage(58, "i", 3);
+	var cmd = Msg.encodeMessage(58, "b", 3);
 	robotSocket.write(cmd);
     });
 
@@ -156,7 +156,7 @@ io.on("connection", (socket) => {
 
     socket.on("stop", () => {
 	console.log("Received stop message");
-	var cmd = Msg.encodeMessage(58, "i", 8);
+	var cmd = Msg.encodeMessage(58, "b", 8);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "stop"});
     });
