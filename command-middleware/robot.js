@@ -7,11 +7,13 @@ const Msg = require("./binmsg.js");
 const robot = {
     x: null,
     y: null,
+    state: "undefined",
 
     getStatus: () => {
 	return {
 	    x: robot.x,
-	    y: robot.y
+	    y: robot.y,
+	    state: robot.state,
 	};
     },
     
@@ -48,7 +50,9 @@ const robot = {
 	    return_message = "hmap";
 	    break;
 	case Msg.TYPE_INFOSTATE:
+	    robot.state = message.info_state;
 	    return_message = "infostate";
+	    payload = robot.getStatus();
 	    break;
 	case Msg.TYPE_ROBOTINFO:
 	    return_message = "robotinfo";
