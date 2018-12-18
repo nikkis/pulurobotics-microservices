@@ -36,8 +36,9 @@ const WANT_DATA = 3;
 var data_parser_state = WANT_OPCODE;
 var opcode, data_length, target_buf_pos, buffer, tmpbuf;
 robotSocket.on("data", (data) => {
-    console.debug("New data chunk received");
-    console.debug(data);
+    //console.debug("***********************")
+    //console.debug("New data chunk received");
+    //console.debug(data.toString("hex"));
 
     for (var i = 0; i < data.length; i++) {
 	
@@ -74,24 +75,26 @@ robotSocket.on("data", (data) => {
 	    //console.log(`target_buf_pos: ${target_buf_pos}, data_length: ${data_length}`);
 	    if (target_buf_pos - 3 == data_length) {
 		//console.debug("parser: end of data, message ready");
+		//console.debug("parser: about to decode, message dump follows");
+		//console.debug(buffer.toString("hex"));
 		var message = Msg.decodeMessage(buffer);
 		var {return_message, payload} = robot.processMessage(message);
-		console.log(`Robot gave us message ${return_message}`);
+		//console.log(`Robot gave us message ${return_message}`);
 		if (return_message) {
 		    // TODO: send robot update to UI via socketIO
-		    console.log("Sending message to UI");
-		    console.log(return_message);
-		    console.log(payload);
+		    //console.debug("Sending message to UI");
+		    //console.debug(return_message);
+		    //console.debug(payload);
 		    io.sockets.emit(return_message, payload);
 		}
 		data_parser_state = WANT_OPCODE;
 		break;
 	    }
-	    //console.log("parser: more data expected");
+	    //console.debug("parser: more data expected");
 	    break;
 	}
     }
-    console.debug("Finished processing data chunk");
+    //console.debug("Finished processing data chunk");
 });
 
 robotSocket.on("end", () => {
@@ -110,6 +113,8 @@ io.on("connection", (socket) => {
     console.log(`SocketIO client id ${socket.id} connected.`);
 
     clientConnectionPool[socket.id] = socket;
+
+    io.sockets.emit("robot_status", robot.getStatus());
 
     socket.on("disconnect", () => {
 	console.log(`SocketIO client id ${socket.id} disconnected.`);

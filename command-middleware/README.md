@@ -1,0 +1,12 @@
+Robot state object
+ * x: current x-coordinate (integer)
+ * y: current y-coordinate (integer)
+ * status: idle, think, forward, reverse, left, right, charging, daijuing (string)
+ * motors_on: (boolean)
+ * autonomous_exploration: (boolean)
+ * battery: (object)
+ ** charging: (boolean)
+ ** charge_finished: (boolean)
+ ** voltage: (double)
+ ** percentage: (integer)
+ ** charge_voltage: (double)
