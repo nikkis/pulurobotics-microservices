@@ -154,6 +154,13 @@ io.on("connection", (socket) => {
 	io.sockets.emit("command_received", {command: "go"});
     });
 
+    socket.on("stop", () => {
+	console.log("Received stop message");
+	var cmd = Msg.encodeMessage(58, "i", 8);
+	robotSocket.write(cmd);
+	io.sockets.emit("command_received", {command: "stop"});
+    });
+
     socket.on("add_obstacle", (x, y) => {
 	console.log("Received add_obstacle message");
 	var cmd = Msg.encodeMessage(60, "ii", x, y);
