@@ -127,24 +127,29 @@ function decodeMessage(msgdata) {
 	type: opcode,
 	length: length
     };
-    try { // TODO: remove
+
     switch(opcode) {
     case TYPE_LIDAR_LOWRES:
 	console.log("decoding TYPE_LIDAR_LOWRES");
 	console.log("message dump follows");
 	console.log(data);
 	
-	message.robot_angle = data.readIntBE(0, 2) / 65536 * 360;
+	message.robot_angle = data.readIntBE(0, 2) / 65536.0 * 360.0;
 	message.robot_x = data.readIntBE(2, 4);
 	message.robot_y = data.readIntBE(6, 4);
 	message.lidar_points = [];
 
 	var num_points = (length - 10) / 2;
 
-	for (var i = 0; i < num_points; i++) {
-	    var x = data.readIntBE(10 + 2 * i, 1) * 160 + message.robot_x;
-	    var y = data.readIntBE(10 + 2 * i + 1, 1) * 160 + message.robot_y;
-	    message.lidar_points.push([x, y])
+	try {
+	    for (var i = 0; i < num_points; i++) {
+		var x = data.readIntBE(10 + 2 * i, 1) * 160 + message.robot_x;
+		var y = data.readIntBE(10 + 2 * i + 1, 1) * 160 + message.robot_y;
+		message.lidar_points.push([x, y])
+	    }
+	} catch (err) {
+	    console.warn("Error while parsing lidar lowres points");
+	    console.warn(err);
 	}
 	break;
     case TYPE_DBG:
@@ -372,7 +377,6 @@ function decodeMessage(msgdata) {
 	console.log(`Opcode ${opcode} not verified.`);
 	break;
     }
-    } catch(err) { console.log(err); } // TODO: remove
 
     return message;
 }
