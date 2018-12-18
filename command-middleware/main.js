@@ -174,7 +174,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("remove_obstacle", (x, y) => {
-	console.log(`Received remove_obstacle message, x: {$x}, ${y}`);
+	console.log(`Received remove_obstacle message, x: ${x}, ${y}`);
 	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "remove_obstacle"});
