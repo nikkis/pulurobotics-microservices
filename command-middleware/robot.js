@@ -80,7 +80,7 @@ const robot = {
 	    robot.x = message.robot_x;
 	    robot.y = message.robot_y;
 	    return_message = "robot_status";
-	    payload = robotStatus();
+	    payload = robot.robotStatus();
 	    break;
 	case Msg.TYPE_INFOSTATE:
 	    robot.status = message.info_state;
