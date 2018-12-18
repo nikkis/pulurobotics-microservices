@@ -5,6 +5,14 @@
 const assert = require("assert").strict;
 
 // Public constants
+const TYPE_DEST = 55;
+const TYPE_ROUTE = 56;
+const TYPE_CHARGE = 57;
+const TYPE_MODE = 58;
+const TYPE_MANU = 59;
+const TYPE_ADDCONSTRAINT = 60;
+const TYPE_REMCONSTRAINT = 61;
+
 const TYPE_POS = 130;
 const TYPE_LIDAR_LOWRES = 131;
 const TYPE_DBG = 132;

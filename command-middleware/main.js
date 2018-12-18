@@ -126,7 +126,7 @@ io.on("connection", (socket) => {
 
     socket.on("start_mapping", () => {
 	console.log("Received start_mapping message");
-	var cmd = Msg.encodeMessage(58, "b", 3);
+	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 3);
 	robotSocket.write(cmd);
     });
 
@@ -141,7 +141,7 @@ io.on("connection", (socket) => {
 	    // unknown mode, go forward
 	    direction = 0;
 	}
-	var cmd = Msg.encodeMessage(55, "iiB", x, y, direction);
+	var cmd = Msg.encodeMessage(Msg.TYPE_DEST, "iiB", x, y, direction);
 	robotSocket.write(cmd);
 
 	io.sockets.emit("command_received", {command: "go_straight"});
@@ -149,28 +149,28 @@ io.on("connection", (socket) => {
 
     socket.on("go", (x, y) => {
 	console.log("Received go message");
-	var cmd = Msg.encodeMessage(56, "iiB", x, y, 0);
+	var cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", x, y, 0);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "go"});
     });
 
     socket.on("stop", () => {
 	console.log("Received stop message");
-	var cmd = Msg.encodeMessage(58, "b", 8);
+	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 8);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "stop"});
     });
 
     socket.on("add_obstacle", (x, y) => {
 	console.log("Received add_obstacle message");
-	var cmd = Msg.encodeMessage(60, "ii", x, y);
+	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "add_obstacle"});
     });
 
     socket.on("remove_obstacle", (x, y) => {
 	console.log("Received remove_obstacle message");
-	var cmd = Msg.encodeMessage(61, "ii", x, y);
+	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "remove_obstacle"});
     });
