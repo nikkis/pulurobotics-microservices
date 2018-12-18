@@ -16,7 +16,7 @@ const robot = {
 
 	switch(message.type) {
 	case Msg.TYPE_LIDAR_LOWRES:
-	    return_message = "lidar lowres";
+	    return_message = "lidar_lowres";
 	    break;
 	case Msg.TYPE_DBG:
 	    return_message = "debug";
@@ -32,7 +32,7 @@ const robot = {
 	    return_message = "routeinfo";
 	    break;
 	case Msg.TYPE_SYNCREQ:
-	    return_message = "sync request";
+	    return_message = "sync_request";
 	    break;
 	case Msg.TYPE_DBGPOINT:
 	    return_message = "dbgpoint";
@@ -47,22 +47,22 @@ const robot = {
 	    return_message = "robotinfo";
 	    break;
 	case Msg.LIDAR_HIGHRES:
-	    return_message = "lidar highres";
+	    return_message = "lidar_highres";
 	    break;
 	case Msg.TYPE_PICTURE:
 	    return_message = "picture";
 	    break;
 	case Msg.TYPE_MOVEMENT_STATUS:
-	    return_message = "movement status";
+	    return_message = "movement_status";
 	    break;
 	case Msg.TYPE_ROUTE_STATUS:
-	    return_message = "route status";
+	    return_message = "route_status";
 	    break;
 	case Msg.STATEVECT:
-	    return_message = "state vector";
+	    return_message = "state_vector";
 	    break;
 	case Msg.LOCALIZATION_RESULT:
-	    return_message = "localization result";
+	    return_message = "localization_result";
 	    break;
 	default:
 	    console.log(`Robot: Unknown message type ${message.type}`);
