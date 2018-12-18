@@ -131,8 +131,8 @@ io.on("connection", (socket) => {
 	console.log(`Sent command to robot: ${cmd}`);
     });
 
-    socket.on("go_to_coordinate", (x, y, mode) => {
-	console.log("Received go_to_coordinate message");
+    socket.on("go_straight", (x, y, mode) => {
+	console.log("Received go_straight message");
 	var direction;
 	if (mode == "forward") {
 	    direction = 0;
@@ -143,6 +143,14 @@ io.on("connection", (socket) => {
 	    direction = 0;
 	}
 	var cmd = Msg.encodeMessage(55, "iiB", x, y, direction);
+	robotSocket.write(cmd);
+	console.log(`Sent command to robot: ${cmd}`);
+    });
+
+    socket.on("go", (x, y) => {
+	console.log("Received go message");
+	var cmd = Msg.encodeMessage(56, "iiB", x, y, 0);
+	robotSocket.write(cmd);
 	console.log(`Sent command to robot: ${cmd}`);
     });
 });
