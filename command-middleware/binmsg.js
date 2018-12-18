@@ -127,9 +127,13 @@ function decodeMessage(msgdata) {
 	type: opcode,
 	length: length
     };
-    
+    try { // TODO: remove
     switch(opcode) {
     case TYPE_LIDAR_LOWRES:
+	console.log("decoding TYPE_LIDAR_LOWRES");
+	console.log("message dump follows");
+	console.log(data);
+	
 	message.robot_angle = data.readIntBE(0, 2) / 65536 * 360;
 	message.robot_x = data.readIntBE(2, 4);
 	message.robot_y = data.readIntBE(6, 4);
@@ -146,8 +150,12 @@ function decodeMessage(msgdata) {
     case TYPE_DBG:
 	// TODO: check
 	console.log(`Opcode ${opcode} not verified.`);
+	console.log("message dump follows");
+	console.log(data.toString("hex"));
+	message.debug_data = [];
 	for (var i = 0; i < 10; i++) {
-	    message[i] = data.readIntBE(i * 4, 4);
+	    console.log(i);
+	    message.debug_data.push(data.readIntBE(i, 2));
 	}
 	break;
     case TYPE_SONAR:
@@ -367,6 +375,7 @@ function decodeMessage(msgdata) {
 	console.log(`Opcode ${opcode} not verified.`);
 	break;
     }
+    } catch(err) { console.log(err); } // TODO: remove
 
     return message;
 }
