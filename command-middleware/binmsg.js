@@ -157,7 +157,7 @@ function decodeMessage(msgdata) {
 	message.robot_y = data.readIntBE(6, 4);
 	message.lidar_points = [];
 
-	var num_points = (length - 10) / 2;
+	var num_points = Math.trunc((length - 10) / 2);
 
 	try {
 	    for (var i = 0; i < num_points; i++) {
@@ -194,7 +194,7 @@ function decodeMessage(msgdata) {
 	message.route_start_x = data.readIntBE(0, 4);
 	message.route_start_y = data.readIntBE(4, 4);
 
-	var num_elements = length / 9;
+	var num_elements = Math.trunc(length / 9);
 	message.route_points = [];
 	
 	for (var i = 0; i < num_elements; i++) {
@@ -296,7 +296,7 @@ function decodeMessage(msgdata) {
 	message.robot_y = data.readIntBE(6, 4);
 	message.lidar_points = [];
 
-	var num_points = (length - 10) / 4;
+	var num_points = Math.trunc((length - 10) / 4);
 
 	for (var i = 0; i < num_points; i++) {
 	    var x = data.readIntBE(10 + 4 * i, 2) + message.robot_x;
