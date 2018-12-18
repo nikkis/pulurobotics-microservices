@@ -4,9 +4,13 @@
   "description": "Uses rsync to get map files from the robot, and offers http interface for serving these files.",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
+    "start": "forever start main.js",
+    "stop": "forever stop main.js",
+    "restart": "forever restart main.js",
     "watch": "nodemon main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "git commit -a -m 'build' && git push",
+    "update_server": "git fetch origin master && git reset --hard FETCH_HEAD"
   },
   "author": "Niko Mäkitalo",
   "license": "MIT",
