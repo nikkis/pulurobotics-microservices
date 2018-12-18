@@ -21,8 +21,8 @@ const robot = {
 	charge_voltage: null,
     },
     lidar: {
-	offset_x,
-	offset_y,
+	offset_x: null,
+	offset_y: null,
     },
 
     getStatus: () => {
@@ -31,7 +31,7 @@ const robot = {
 	    y: robot.y,
 	    size_x: robot.size_x,
 	    size_y: robot.size_y,
-	    angle: robot, angle,
+	    angle: robot.angle,
 	    status: robot.status,
 	    motors_on: robot.motors_on,
 	    autonomous_exploration: robot.autonomous_exploration,
