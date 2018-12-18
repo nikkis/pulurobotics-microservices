@@ -166,16 +166,16 @@ io.on("connection", (socket) => {
 	io.sockets.emit("command_received", {command: "stop"});
     });
 
-    socket.on("add_obstacle", (x, y) => {
-	console.log(`Received add_obstacle message, x: ${x}, y: ${y}`);
-	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
+    socket.on("add_obstacle", (point) => {
+	console.log("Received add_obstacle message, ", point);
+	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", point.x, point.y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "add_obstacle"});
     });
 
-    socket.on("remove_obstacle", (x, y) => {
-	console.log(`Received remove_obstacle message, x: ${x}, ${y}`);
-	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
+    socket.on("remove_obstacle", (point) => {
+	console.log("Received remove_obstacle message, ", point);
+	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", point.x, point.y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "remove_obstacle"});
     });
