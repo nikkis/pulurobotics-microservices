@@ -1,6 +1,9 @@
 Robot state object
  * x: current x-coordinate (integer)
  * y: current y-coordinate (integer)
+ * size_x: (integer)
+ * size_y: (integer)
+ * angle: (integer)
  * status: idle, think, forward, reverse, left, right, charging, daijuing (string)
  * motors_on: (boolean)
  * autonomous_exploration: (boolean)
@@ -10,3 +13,6 @@ Robot state object
  ** voltage: (double)
  ** percentage: (integer)
  ** charge_voltage: (double)
+ * lidar: (object)
+ ** offset_x: (integer)
+ ** offset_y: (integer)
