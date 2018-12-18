@@ -397,6 +397,7 @@ function decodeMessage(msgdata) {
 }
 
 module.exports = {
+    TYPE_POS,
     TYPE_LIDAR_LOWRES,
     TYPE_DBG,
     TYPE_SONAR,
