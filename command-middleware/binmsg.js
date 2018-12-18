@@ -130,9 +130,9 @@ function decodeMessage(msgdata) {
 
     switch(opcode) {
     case TYPE_LIDAR_LOWRES:
-	console.log("decoding TYPE_LIDAR_LOWRES");
-	console.log("message dump follows");
-	console.log(data);
+	//console.log("decoding TYPE_LIDAR_LOWRES");
+	//console.log("message dump follows");
+	//console.log(data);
 	
 	message.robot_angle = data.readIntBE(0, 2) / 65536.0 * 360.0;
 	message.robot_x = data.readIntBE(2, 4);

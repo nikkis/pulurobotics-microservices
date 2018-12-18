@@ -81,9 +81,9 @@ robotSocket.on("data", (data) => {
 		var {return_message, payload} = robot.processMessage(message);
 		//console.log(`Robot gave us message ${return_message}`);
 		if (return_message) {
-		    console.debug("Sending message to UI");
-		    console.debug(return_message);
-		    console.debug(payload);
+		    //console.debug("Sending message to UI");
+		    //console.debug(return_message);
+		    //console.debug(payload);
 		    io.sockets.emit(return_message, payload);
 		}
 		data_parser_state = WANT_OPCODE;
@@ -126,8 +126,23 @@ io.on("connection", (socket) => {
 
     socket.on("start_mapping", () => {
 	console.log("Received start_mapping message");
-	var cmd = robot.createStartMappingCommand();
+	var cmd = Msg.encodeMessage(58, "i", 3);
 	robotSocket.write(cmd);
+	console.log(`Sent command to robot: ${cmd}`);
+    });
+
+    socket.on("go_to_coordinate", (x, y, mode) => {
+	console.log("Received go_to_coordinate message");
+	var direction;
+	if (mode == "forward") {
+	    direction = 0;
+	} else if (mode == "backward") {
+	    direction = 1;
+	} else {
+	    // unknown mode, go forward
+	    direction = 0;
+	}
+	var cmd = Msg.encodeMessage(55, "iiB", x, y, direction);
 	console.log(`Sent command to robot: ${cmd}`);
     });
 });
