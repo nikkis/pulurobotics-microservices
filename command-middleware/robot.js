@@ -7,7 +7,7 @@ const Msg = require("./binmsg.js");
 const robot = {
     x: null,
     y: null,
-    state: "undefined",
+    state: null,
 
     getStatus: () => {
 	return {
