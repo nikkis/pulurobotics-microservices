@@ -179,6 +179,10 @@ const robot = {
 	    payload: payload
 	};
     },
+
+    createStartMappingCommand: () => {
+	return Msg.encodeMessage(58, "i", 3);
+    },
 }
 
 module.exports = robot;
