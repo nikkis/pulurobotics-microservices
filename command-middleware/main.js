@@ -3,26 +3,25 @@
 */
 
 const net = require("net");
-const express = require("express");
-const app = express();
-const socketio = require("socketio");
 
 const Msg = require("./binmsg.js");
-const Robot = require("./robot.js");
+const robot = require("./robot.js");
 const Config = require("./config.json");
 
 /* Initialize robot client and SocketIO server */
 
+console.log(`Connecting to robot on ${Config.robotHost}:${Config.robotPort}`);
 const robotSocket = net.createConnection(
     {host: Config.robotHost, port: Config.robotPort},
     () => {
-	console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}.`);
+	console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
     });
 
 console.log(`Starting Socket.io server on port ${Config.socketIOPort}`);
-const server = app.listen(Config.websocketPort);
-const io = socketio.listen(server);
-console.log("Started.");
+const app = require("express")();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
+server.listen(Config.socketIOPort);
 
 /* Events for robot client socket */
 
@@ -35,50 +34,64 @@ const WANT_LENGTH1 = 1;
 const WANT_LENGTH2 = 2;
 const WANT_DATA = 3;
 var data_parser_state = WANT_OPCODE;
-var opcode, data_length, data_pos, buffer, tmpbuf;
+var opcode, data_length, target_buf_pos, buffer, tmpbuf;
 robotSocket.on("data", (data) => {
-    // console.debug("New data chunk received");
+    console.debug("New data chunk received");
+    console.debug(data);
 
     for (var i = 0; i < data.length; i++) {
 	
 	switch (data_parser_state) {
 	case WANT_OPCODE:
-	    // console.debug("parser: looking for opcode");
+	    //console.debug("parser: looking for opcode");
 	    opcode = data.readUIntBE(i, 1);
 	    data_parser_state = WANT_LENGTH1;
+	    //console.debug(`parser: opcode ${opcode} found`);
 	    break;
 	    
 	case WANT_LENGTH1:
-	    // console.debug("parser: looking for 1st length byte");
+	    //console.debug("parser: looking for 1st length byte");
 	    tmpbuf = Buffer.alloc(2);
 	    data.copy(tmpbuf, 0, i, i+1);
 	    data_parser_state = WANT_LENGTH2;
 	    break;
 	    
 	case WANT_LENGTH2:
-	    // console.debug("parser: looking for 2nd length byte");
+	    //console.debug("parser: looking for 2nd length byte");
 	    data.copy(tmpbuf, 1, i, i+1);
 	    data_length = tmpbuf.readUIntBE(0, 2);
-	    data_pos = 0;
 	    buffer = Buffer.alloc(data_length + 3);
 	    data.copy(buffer, 0, 0, 3);
+	    target_buf_pos = 3;
 	    data_parser_state = WANT_DATA;
+	    //console.debug(`parser: length is ${data_length}`);
 	    break;
 	    
 	case WANT_DATA:
-	    // console.debug("parser: looking for data");
-	    data.copy(buffer, data_pos, i, i+1);
-	    data_pos++;
-	    if (data_pos == data_length) {
+	    //console.debug("parser: looking for data");
+	    data.copy(buffer, target_buf_pos, i, i+1);
+	    target_buf_pos++;
+	    //console.log(`target_buf_pos: ${target_buf_pos}, data_length: ${data_length}`);
+	    if (target_buf_pos - 3 == data_length) {
+		//console.debug("parser: end of data, message ready");
 		var message = Msg.decodeMessage(buffer);
-		robot.processMessage(message);
-		// TODO: send robot update to UI via socketIO
+		var {return_message, payload} = robot.processMessage(message);
+		console.log(`Robot gave us message ${return_message}`);
+		if (return_message) {
+		    // TODO: send robot update to UI via socketIO
+		    console.log("Sending message to UI");
+		    console.log(return_message);
+		    console.log(payload);
+		    io.sockets.emit(return_message, payload);
+		}
 		data_parser_state = WANT_OPCODE;
+		break;
 	    }
+	    //console.log("parser: more data expected");
 	    break;
 	}
     }
-    // console.debug("Finished processing data chunk");
+    console.debug("Finished processing data chunk");
 });
 
 robotSocket.on("end", () => {
