@@ -5,6 +5,7 @@
 const assert = require("assert").strict;
 
 // Public constants
+const TYPE_POS = 130;
 const TYPE_LIDAR_LOWRES = 131;
 const TYPE_DBG = 132;
 const TYPE_SONAR = 133;
@@ -129,6 +130,15 @@ function decodeMessage(msgdata) {
     };
 
     switch(opcode) {
+    case TYPE_POS:
+	//console.log("decoding TYPE_POS");
+	message.robot_angle = data.readIntBE(0, 2) / 65536.0 * 360.0;
+	message.robot_x = data.readIntBE(2, 4);
+	message.robot_y = data.readIntBE(6, 4);
+	if (length > 10) {
+	    // TODO: handle cur_cmd_status
+	}
+	break;
     case TYPE_LIDAR_LOWRES:
 	//console.log("decoding TYPE_LIDAR_LOWRES");
 	//console.log("message dump follows");

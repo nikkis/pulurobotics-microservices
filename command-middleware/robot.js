@@ -47,6 +47,14 @@ const robot = {
 	var payload = null;
 
 	switch(message.type) {
+	case Msg.TYPE_POS:
+	    robot.x = message.robot_x;
+	    robot.y = message.robot_y;
+	    robot.angle = message.robot_angle;
+
+	    return_message = "robot_status";
+	    payload = robot.getStatus();
+	    break;
 	case Msg.TYPE_LIDAR_LOWRES:
 	    robot.x = message.robot_x;
 	    robot.y = message.robot_y;
@@ -71,7 +79,7 @@ const robot = {
 	    robot.battery.voltage = message.battery_voltage;
 	    robot.battery.percentage = message.battery_percentage;
 	    robot.battery.charge_voltage = message.charge_voltage;
-	    return_message = "battery";
+	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
 	case Msg.TYPE_ROUTEINFO:
