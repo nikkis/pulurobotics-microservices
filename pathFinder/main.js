@@ -1,4 +1,3 @@
-console.log('moi! moijhghj!');
 
 /* Clean Area
 * This function inputs are: a map of the room to clean and the initial position of the robot (x, y, direction)
@@ -17,7 +16,27 @@ console.log('moi! moijhghj!');
 *          - the initial coordinates (x,y), and
 *          - the direction (alpha angle from x direction, range from -Pi to Pi) of the robot in the room
 */
+const map = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
 
+const position = {
+    x: 2,
+    y: 3,
+    angle: 30
+}
+
+let coordinateList = [];
+coordinateList = cleanArea(map, position);
+
+console.log("Coordinate list: " + coordinateList);
 
 function cleanArea(map, position){
     let coordinateList = [];
@@ -28,7 +47,7 @@ function cleanArea(map, position){
         angle: position.angle
     }
 
-    const forwardStep = 50;
+    const forwardStep = 50; //Step ahead temporary position
     let turns = 0;
 
     let obstacle = false;
@@ -66,20 +85,32 @@ function cleanArea(map, position){
 }
 
 // Returns true if obstacle in front of the robot
-function Boolean checkObstacle(map, position, radius){
+let obstacle = function checkObstacle(map, position, radius){
     const r = radius;
+    
+    //    sensorArray in robot own coordinates
+    //       (X_1,Y_1) [(0,-2),(0,-1),(0,0),(0,1),(0,2)]
+    const sensorObstacles = [(0,-2),(0,-1),(0,0),(0,1),(0,2)]; // Positions in front of temporary position in robot own coordinates
 
     let obstacle = false;
-    let frontObstacles = [];
-
-    //    sensorArray in robot coordinates
-    //       (X_1,Y_1) [(0,-2),(0,-1),(0,0),(0,1),(0,2)]
 
     // Find obstacles in front of robot: X_robot position + r*cos(alpha) +
     // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
+    let frontObstacles = [];
+    var i;
+    for (i=0; i<sensorObstacles.length; i++){
+        frontObstacles.add(map.get(
+            position.x + 
+            r*Math.cos(position.angle) + 
+            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle)),
+            position.y +
+            r*Math.sin(position.angle) + 
+            (sensorObstacles[i].x * Math.sin(position.angle) + sensorObstacles[i].y * Math.cos(position.angle))
+            ));
+    }
 
     if (frontObstacles.contains(1))
         obstacle = true;
 
     return obstacle;
-}
+};
