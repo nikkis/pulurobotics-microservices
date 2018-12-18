@@ -150,11 +150,8 @@ function decodeMessage(msgdata) {
     case TYPE_DBG:
 	// TODO: check
 	console.log(`Opcode ${opcode} not verified.`);
-	console.log("message dump follows");
-	console.log(data.toString("hex"));
 	message.debug_data = [];
 	for (var i = 0; i < 10; i++) {
-	    console.log(i);
 	    message.debug_data.push(data.readIntBE(i, 2));
 	}
 	break;
