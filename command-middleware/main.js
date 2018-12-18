@@ -123,4 +123,11 @@ io.on("connection", (socket) => {
 	console.log("SocketIO error:");
 	console.log(error);
     });
+
+    socket.on("start_mapping", () => {
+	console.log("Received start_mapping message");
+	var cmd = robot.createStartMappingCommand();
+	robotSocket.write(cmd);
+	console.log(`Sent command to robot: ${cmd}`);
+    });
 });
