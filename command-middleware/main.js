@@ -143,23 +143,28 @@ io.on("connection", (socket) => {
 	}
 	var cmd = Msg.encodeMessage(55, "iiB", x, y, direction);
 	robotSocket.write(cmd);
+
+	io.sockets.emit("command_received", {command: "go_straight"});
     });
 
     socket.on("go", (x, y) => {
 	console.log("Received go message");
 	var cmd = Msg.encodeMessage(56, "iiB", x, y, 0);
 	robotSocket.write(cmd);
+	io.sockets.emit("command_received", {command: "go"});
     });
 
     socket.on("add_obstacle", (x, y) => {
 	console.log("Received add_obstacle message");
 	var cmd = Msg.encodeMessage(60, "ii", x, y);
 	robotSocket.write(cmd);
+	io.sockets.emit("command_received", {command: "add_obstacle"});
     });
 
     socket.on("remove_obstacle", (x, y) => {
 	console.log("Received remove_obstacle message");
 	var cmd = Msg.encodeMessage(61, "ii", x, y);
 	robotSocket.write(cmd);
+	io.sockets.emit("command_received", {command: "remove_obstacle"});
     });
 });
