@@ -1,5 +1,5 @@
 {
-    "robotIp": "192.168.43.63",
+    "robotHost": "192.168.43.63",
     "robotPort": 22222,
     "socketIOPort": 43434
 }
