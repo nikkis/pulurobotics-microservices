@@ -7,6 +7,9 @@ const Msg = require("./binmsg.js");
 const robot = {
     x: null,
     y: null,
+    size_x: null,
+    size_y: null,
+    angle: null,
     status: null,
     motors_on: null,
     autonomous_exploration: null,
@@ -15,16 +18,25 @@ const robot = {
 	charge_finished: null,
 	voltage: null,
 	percentage: null,
-	chare_voltage: null,
+	charge_voltage: null,
+    },
+    lidar: {
+	offset_x,
+	offset_y,
     },
 
     getStatus: () => {
 	return {
 	    x: robot.x,
 	    y: robot.y,
+	    size_x: robot.size_x,
+	    size_y: robot.size_y,
+	    angle: robot, angle,
 	    status: robot.status,
 	    motors_on: robot.motors_on,
 	    autonomous_exploration: robot.autonomous_exploration,
+	    battery: robot.battery,
+	    lidar: robot.lidar,
 	};
     },
     
@@ -64,7 +76,10 @@ const robot = {
 	    return_message = "dbgpoint";
 	    break;
 	case Msg.TYPE_HMAP:
-	    return_message = "hmap";
+	    robot.angle = message.robot_angle;
+	    robot.x = message.robot_x;
+	    robot.y = message.robot_y;
+	    return_message = "robot_status";
 	    break;
 	case Msg.TYPE_INFOSTATE:
 	    robot.status = message.info_state;
@@ -72,7 +87,12 @@ const robot = {
 	    payload = robot.getStatus();
 	    break;
 	case Msg.TYPE_ROBOTINFO:
-	    return_message = "robotinfo";
+	    robot.size_x = message.robot_size_x;
+	    robot.size_y = message.robot_size_y;
+	    robot.lidar.offset_x = message.lidar_offset_x;
+	    robot.lidar.offset_y = message.lidar_offset_y;
+	    return_message = "robot_status";
+	    payload = robot.getStatus();
 	    break;
 	case Msg.LIDAR_HIGHRES:
 	    return_message = "lidar_highres";
@@ -89,8 +109,8 @@ const robot = {
 	case Msg.STATEVECT:
 	    robot.motors_on = message.motors_on;
 	    robot.autononmous_exploration = message.autonomous_exploration;
+	    return_message = "robot_status";
 	    payload = robot.getStatus();
-	    return_message = "state_vector";
 	    break;
 	case Msg.LOCALIZATION_RESULT:
 	    return_message = "localization_result";
