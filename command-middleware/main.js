@@ -131,7 +131,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("go_straight", (x, y, mode) => {
-	console.log("Received go_straight message");
+	console.log(`Received go_straight message, x: ${x}, y: ${y}, mode: ${mode}`);
 	var direction;
 	if (mode == "forward") {
 	    direction = 0;
@@ -148,7 +148,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("go", (x, y) => {
-	console.log("Received go message");
+	console.log(`Received go message, x: ${x}, y: ${y}`);
 	var cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", x, y, 0);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "go"});
@@ -167,14 +167,14 @@ io.on("connection", (socket) => {
     });
 
     socket.on("add_obstacle", (x, y) => {
-	console.log("Received add_obstacle message");
+	console.log(`Received add_obstacle message, x: ${x}, y: ${y}`);
 	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "add_obstacle"});
     });
 
     socket.on("remove_obstacle", (x, y) => {
-	console.log("Received remove_obstacle message");
+	console.log(`Received remove_obstacle message, x: {$x}, ${y}`);
 	var cmd = Msg.encodeMessage(Msg.TYPE_ADDCONSTRAINT, "ii", x, y);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "remove_obstacle"});
