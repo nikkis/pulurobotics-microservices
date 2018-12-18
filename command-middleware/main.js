@@ -114,7 +114,7 @@ io.on("connection", (socket) => {
 
     clientConnectionPool[socket.id] = socket;
 
-    io.sockets.emit("robot_status", {x: 5, y: 7});
+    io.sockets.emit("robot_status", robot.getStatus());
 
     socket.on("disconnect", () => {
 	console.log(`SocketIO client id ${socket.id} disconnected.`);
