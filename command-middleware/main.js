@@ -62,7 +62,7 @@ robotSocket.on("data", (data) => {
 	    data.copy(tmpbuf, 1, i, i+1);
 	    data_length = tmpbuf.readUIntBE(0, 2);
 	    buffer = Buffer.alloc(data_length + 3);
-	    data.copy(buffer, 0, 0, 3);
+	    data.copy(buffer, 0, i-2, i+1);
 	    target_buf_pos = 3;
 	    data_parser_state = WANT_DATA;
 	    //console.debug(`parser: length is ${data_length}`);
@@ -72,14 +72,14 @@ robotSocket.on("data", (data) => {
 	    //console.debug("parser: looking for data");
 	    data.copy(buffer, target_buf_pos, i, i+1);
 	    target_buf_pos++;
-	    //console.log(`target_buf_pos: ${target_buf_pos}, data_length: ${data_length}`);
+	    //console.debug(`target_buf_pos: ${target_buf_pos}, data_length: ${data_length}`);
 	    if (target_buf_pos - 3 == data_length) {
 		//console.debug("parser: end of data, message ready");
 		//console.debug("parser: about to decode, message dump follows");
 		//console.debug(buffer.toString("hex"));
 		var message = Msg.decodeMessage(buffer);
 		var {return_message, payload} = robot.processMessage(message);
-		//console.log(`Robot gave us message ${return_message}`);
+		//console.debug(`Robot gave us message ${return_message}`);
 		if (return_message) {
 		    //console.debug("Sending message to UI");
 		    //console.debug(return_message);
