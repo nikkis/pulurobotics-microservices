@@ -163,12 +163,7 @@ function decodeMessage(msgdata) {
 	}
 	break;
     case TYPE_DBG:
-	// TODO: check
 	//console.log(`Opcode ${opcode} not verified.`);
-	message.debug_data = [];
-	for (var i = 0; i < 10; i++) {
-	    message.debug_data.push(data.readIntBE(i, 2));
-	}
 	break;
     case TYPE_SONAR:
 	// TODO: check
