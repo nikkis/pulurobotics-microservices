@@ -41,7 +41,7 @@ const robot = {
     },
     
     processMessage: (message) => {
-	console.log(`Robot: processMessage(${message.type})`);
+	//console.log(`Robot: processMessage(${message.type})`);
 
 	var return_message = undefined;
 	var payload = null;

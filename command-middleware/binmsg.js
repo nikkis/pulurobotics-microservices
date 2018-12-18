@@ -154,7 +154,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_DBG:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	message.debug_data = [];
 	for (var i = 0; i < 10; i++) {
 	    message.debug_data.push(data.readIntBE(i, 2));
@@ -162,7 +162,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_SONAR:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	message.sonar_x = data.readIntBE(0, 4);
 	message.sonar_y = data.readIntBE(4, 4);
 	message.sonar_z = data.readIntBE(8, 4);
@@ -177,7 +177,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_ROUTEINFO:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	message.route_start_x = data.readIntBE(0, 4);
 	message.route_start_y = data.readIntBE(4, 4);
 
@@ -197,7 +197,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_DBGPOINT:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	if (data.readIntBE(11, 1) == 0) {
 	    message.debug_point_x = data.readIntBE(0, 4);
 	    message.debug_point_y = data.readIntBE(4, 4);
@@ -214,7 +214,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_HMAP:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	message.hmap_xsamples = data.readIntBE(0, 2);
 	message.hmap_ysamples = data.readIntBE(2, 2);
 	if (message.hmap_xsamples < 1 ||
@@ -234,7 +234,7 @@ function decodeMessage(msgdata) {
     case TYPE_INFOSTATE:
 	// TODO: check
 	// TODO: consider a lookup table instead
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	var info_state = data.readIntBE(0, 1);
 	if (info_state == -1) {
 	    message.info_state = "undefined";
@@ -261,7 +261,7 @@ function decodeMessage(msgdata) {
     case TYPE_ROBOTINFO:
 	// TODO: check
 	try {
-	    console.log(`Opcode ${opcode} not verified.`);
+	    //console.log(`Opcode ${opcode} not verified.`);
 	    message.robot_size_x = data.readIntBE(0, 2);
 	    message.robot_size_y = data.readIntBE(2, 2);
 	    message.lidar_offset_x = data.readIntBE(4, 2);
@@ -272,11 +272,11 @@ function decodeMessage(msgdata) {
 	}
 	break;
     case TYPE_PICTURE:
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	break;
     case TYPE_LIDAR_HIGHRES:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 
 	message.robot_angle = data.readIntBE(0, 2) / 65536 * 360;
 	message.robot_x = data.readIntBE(2, 4);
@@ -293,7 +293,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_MOVEMENT_STATUS:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	
 	message.start_angle = data.readIntBE(0, 2);
 	message.start_x = data.readIntBE(2, 4);
@@ -322,7 +322,7 @@ function decodeMessage(msgdata) {
 	   4: Unknown (newly implemented?) reason
 	   Or whether not to include them at all.
 	*/
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 
 	message.start_angle = data.readIntBE(0, 2);
 	message.start_x = data.readIntBE(2, 4);
@@ -342,7 +342,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_STATEVECT:
 	// TODO: check
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 
 	var state_vector_fields = [
 	    {name: "localization_2d"},
@@ -379,7 +379,7 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_LOCALIZATION_RESULT:
 	// TODO: How does this work? Is it needed?
-	console.log(`Opcode ${opcode} not verified.`);
+	//console.log(`Opcode ${opcode} not verified.`);
 	break;
     }
 
