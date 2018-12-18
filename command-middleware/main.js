@@ -81,10 +81,9 @@ robotSocket.on("data", (data) => {
 		var {return_message, payload} = robot.processMessage(message);
 		//console.log(`Robot gave us message ${return_message}`);
 		if (return_message) {
-		    // TODO: send robot update to UI via socketIO
-		    //console.debug("Sending message to UI");
-		    //console.debug(return_message);
-		    //console.debug(payload);
+		    console.debug("Sending message to UI");
+		    console.debug(return_message);
+		    console.debug(payload);
 		    io.sockets.emit(return_message, payload);
 		}
 		data_parser_state = WANT_OPCODE;
