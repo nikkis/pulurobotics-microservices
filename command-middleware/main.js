@@ -11,7 +11,7 @@ const Config = require("./config.json");
 /* Initialize robot client and SocketIO server */
 
 console.log(`Connecting to robot on ${Config.robotHost}:${Config.robotPort}`);
-const robotSocket = net.createConnection(
+let robotSocket = net.createConnection(
     {host: Config.robotHost, port: Config.robotPort},
     () => {
 	console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
@@ -103,6 +103,16 @@ robotSocket.on("end", () => {
 
 robotSocket.on("close", () => {
     console.log("Robot client socket is closed.");
+
+    setTimeout(() => {
+	console.log("Reconnecting to robot.");
+	robotSocket = net.createConnection(
+	    {host: Config.robotHost, port: Config.robotPort},
+	    () => {
+		console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
+	    });
+	robot.socket = robotSocket;
+    }, 5000);
 });
 
 /* Events for SocketIO server */
@@ -164,6 +174,8 @@ io.on("connection", (socket) => {
 	if (list.length > 0) {
 	    robot.waypoints = list;
 	    const waypoint = robot.waypoints.shift();
+
+	    console.log("Going to first waypoint:", waypoint);
 
 	    var cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", waypoint.x, waypoint.y, 0);
 	    robotSocket.write(cmd);
