@@ -16,6 +16,7 @@ const robotSocket = net.createConnection(
     () => {
 	console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
     });
+robot.socket = robotSocket;
 
 console.log(`Starting Socket.io server on port ${Config.socketIOPort}`);
 const app = require("express")();
@@ -159,7 +160,16 @@ io.on("connection", (socket) => {
     socket.on("go_list", (list) => {
 	console.log("Received go_list message");
 	console.log(list);
-	// TODO: implement
+
+	if (list.length > 0) {
+	    robot.waypoints = list;
+	    const waypoint = robot.waypoints.shift();
+
+	    var cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", waypoint.x, waypoint.y, 0);
+	    robotSocket.write(cmd);
+	}
+
+	io.sockets.emit("command_received", {command: "go_list"});
     });
 
     socket.on("stop", () => {

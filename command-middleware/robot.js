@@ -5,6 +5,7 @@
 const Msg = require("./binmsg.js");
 
 const robot = {
+    // public fields
     x: null,
     y: null,
     size_x: null,
@@ -25,6 +26,10 @@ const robot = {
 	offset_y: null,
     },
 
+    // private fields
+    waypoints: undefined,
+
+    // public methods
     getStatus: () => {
 	return {
 	    x: robot.x,
@@ -168,6 +173,13 @@ const robot = {
 		success: message.success,
 		reroute_count: message.reroute_count,
 	    };
+
+	    if (robot.waypoints && robot.waypoints.length > 0) {
+		console.debug("Result from previous waypoint: ", message.success, ", proceeding to next waypoint");
+		const waypoint = robot.waypoints.shift();
+		const cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", waypoint.x, waypoint.y, 0);
+		robot.socket.write(cmd);
+	    }
 	    break;
 	case Msg.STATEVECT:
 	    robot.motors_on = message.motors_on;
@@ -187,6 +199,8 @@ const robot = {
 	    payload: payload
 	};
     },
+
+    // private methods
 }
 
 module.exports = robot;
