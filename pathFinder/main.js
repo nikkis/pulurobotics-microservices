@@ -17,13 +17,13 @@
 *          - the direction (alpha angle from x direction, range from -Pi to Pi) of the robot in the room
 */
 const map = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
@@ -33,12 +33,12 @@ const position = {
     angle: 0
 }
 
-let coordinateList = [];
+// let coordinateList = [];
 coordinateList = cleanArea(map, position);
 
 console.log("Coordinate list: " + coordinateList);
 
-let coordinateList = function cleanArea(map, position){
+function cleanArea(map, position){
     let coordinateList = [];
 
     let tmpPos = {
@@ -52,7 +52,7 @@ let coordinateList = function cleanArea(map, position){
 
     let obstacle = false;
 
-    while(1){
+    while(turns < 10){
         while(!obstacle){
             tmpPos.x += forwardStep*Math.cos(tmpPos.angle)
             tmpPos.y += forwardStep*Math.sin(tmpPos.angle);
@@ -64,9 +64,9 @@ let coordinateList = function cleanArea(map, position){
         let turnAngle;
 
         if (turns%2 == 0){
-            turnAngle = -90; // Turn right 90 degrees
+            turnAngle = -(Math.PI)/2; // Turn right 90 degrees
         }
-        else {turnAngle = 90} // Turn left 90 degrees
+        else {turnAngle = (Math.PI)/2} // Turn left 90 degrees
         
         tmpPos.angle += turnAngle; // Turn
         obstacle = checkObstacle(map, tmpPos, forwardStep);
@@ -78,14 +78,15 @@ let coordinateList = function cleanArea(map, position){
 
         tmpPos.angle += turnAngle; // Turn
         
-        turns+=1; // Counter number of +-180 degrees turns
+        turns++; // Counter number of +-180 degrees turns
+        console.log("Number of 180 degrees truns is: " + turns);
     }
 
     return coordinateList;
 }
 
 // Returns true if obstacle in front of the robot
-let obstacle = function checkObstacle(map, position, radius){
+function checkObstacle(map, position, radius){
     const r = radius;
     
     //    sensorArray in robot own coordinates
@@ -98,18 +99,22 @@ let obstacle = function checkObstacle(map, position, radius){
     // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
     let frontObstacles = [];
     for (var i=0; i<sensorObstacles.length; i++){
-        frontObstacles.add(map.get(
-            position.x + 
+        frontObstacles.push(map[
+            Math.round(position.x + 
             r*Math.cos(position.angle) + 
-            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle)),
-            position.y +
+            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle)))],
+            [Math.round(position.y +
             r*Math.sin(position.angle) + 
-            (sensorObstacles[i].x * Math.sin(position.angle) + sensorObstacles[i].y * Math.cos(position.angle))
-            ));
+            (sensorObstacles[i].x * Math.sin(position.angle) + sensorObstacles[i].y * Math.cos(position.angle)))
+            ]);
     }
 
-    if (frontObstacles.contains(1))
-        obstacle = true;
+    for(var i=0; i<frontObstacles.length; i++){
+        if (frontObstacles[i] == 1){
+            obstacle = true;    
+        }
+        console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
+    }
 
     return obstacle;
 };
