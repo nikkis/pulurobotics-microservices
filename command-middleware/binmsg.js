@@ -140,7 +140,7 @@ function decodeMessage(msgdata) {
     switch(opcode) {
     case TYPE_POS:
 	//console.log("decoding TYPE_POS");
-	message.robot_angle = data.readIntBE(0, 2) / 65536.0 * 360.0;
+	message.robot_angle = data.readUIntBE(0, 2) / 65536.0 * 360.0;
 	message.robot_x = data.readIntBE(2, 4);
 	message.robot_y = data.readIntBE(6, 4);
 	if (length > 10) {
@@ -152,7 +152,7 @@ function decodeMessage(msgdata) {
 	//console.log("message dump follows");
 	//console.log(data);
 	
-	message.robot_angle = data.readIntBE(0, 2) / 65536.0 * 360.0;
+	message.robot_angle = data.readUIntBE(0, 2) / 65536.0 * 360.0;
 	message.robot_x = data.readIntBE(2, 4);
 	message.robot_y = data.readIntBE(6, 4);
 	message.lidar_points = [];
@@ -237,7 +237,7 @@ function decodeMessage(msgdata) {
 	    message.hmap_invalid = true;
 	    return undefined; // TODO: confirm that this is a good way to signal invalid data
 	}
-	message.robot_angle = data.readIntBE(4, 2) / 65536.0 * 360.0;
+	message.robot_angle = data.readUIntBE(4, 2) / 65536.0 * 360.0;
 	message.robot_x = data.readIntBE(6, 4);
 	message.robot_y = data.readIntBE(10, 4);
 	message.hmap_unit_size = data.readIntBE(14, 1);
@@ -291,7 +291,7 @@ function decodeMessage(msgdata) {
 	// TODO: check
 	//console.log(`Opcode ${opcode} not verified.`);
 
-	message.robot_angle = data.readIntBE(0, 2) / 65536 * 360;
+	message.robot_angle = data.readUIntBE(0, 2) / 65536 * 360;
 	message.robot_x = data.readIntBE(2, 4);
 	message.robot_y = data.readIntBE(6, 4);
 	message.lidar_points = [];
@@ -308,13 +308,13 @@ function decodeMessage(msgdata) {
 	// TODO: check
 	//console.log(`Opcode ${opcode} not verified.`);
 	
-	message.start_angle = data.readIntBE(0, 2);
+	message.start_angle = data.readUIntBE(0, 2);
 	message.start_x = data.readIntBE(2, 4);
 	message.start_y = data.readIntBE(6, 4);
 	message.requested_x = data.readIntBE(10, 4);
 	message.requested_y = data.readIntBE(14, 4);
 	message.requested_backmode = data.readIntBE(18, 1);
-	message.current_angle = data.readIntBE(19, 2);
+	message.current_angle = data.readUIntBE(19, 2);
 	message.current_x = data.readIntBE(21, 4);
 	message.current_y = data.readIntBE(25, 4);
 	message.statuscode = data.readIntBE(29, 1);
@@ -337,12 +337,12 @@ function decodeMessage(msgdata) {
 	*/
 	//console.log(`Opcode ${opcode} not verified.`);
 
-	message.start_angle = data.readIntBE(0, 2);
+	message.start_angle = data.readUIntBE(0, 2);
 	message.start_x = data.readIntBE(2, 4);
 	message.start_y = data.readIntBE(6, 4);
 	message.requested_x = data.readIntBE(10, 4);
 	message.requested_y = data.readIntBE(14, 4);
-	message.current_angle = data.readIntBE(18, 2);
+	message.current_angle = data.readUIntBE(18, 2);
 	message.current_x = data.readIntBE(20, 4);
 	message.current_y = data.readIntBE(24, 4);
 	message.statuscode = data.readIntBE(28, 1);
