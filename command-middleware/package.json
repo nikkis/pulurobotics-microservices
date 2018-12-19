@@ -9,7 +9,7 @@
     "restart": "forever restart main.js",
     "watch": "nodemon main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "git commit -a -m 'build' && git push",
+    "deploy": "git commit -a -m 'build' && git push"
   },
   "author": "Fabian Fagerholm",
   "license": "MIT",
