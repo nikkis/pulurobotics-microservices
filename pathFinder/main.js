@@ -30,7 +30,7 @@ const map = [
 const position = {
     x: 2,
     y: 3,
-    angle: 30
+    angle: 0
 }
 
 let coordinateList = [];
@@ -38,7 +38,7 @@ coordinateList = cleanArea(map, position);
 
 console.log("Coordinate list: " + coordinateList);
 
-function cleanArea(map, position){
+let coordinateList = function cleanArea(map, position){
     let coordinateList = [];
 
     let tmpPos = {
@@ -47,7 +47,7 @@ function cleanArea(map, position){
         angle: position.angle
     }
 
-    const forwardStep = 50; //Step ahead temporary position
+    const forwardStep = 2; //Step ahead temporary position
     let turns = 0;
 
     let obstacle = false;
@@ -97,8 +97,7 @@ let obstacle = function checkObstacle(map, position, radius){
     // Find obstacles in front of robot: X_robot position + r*cos(alpha) +
     // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
     let frontObstacles = [];
-    var i;
-    for (i=0; i<sensorObstacles.length; i++){
+    for (var i=0; i<sensorObstacles.length; i++){
         frontObstacles.add(map.get(
             position.x + 
             r*Math.cos(position.angle) + 
