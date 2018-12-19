@@ -139,6 +139,7 @@ io.on("connection", (socket) => {
 	console.log("Received start_mapping message");
 	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 3);
 	robotSocket.write(cmd);
+	io.sockets.emit("start_mapping", {command: "go_straight"});
     });
 
     socket.on("go_straight", (point, mode="forward") => {
