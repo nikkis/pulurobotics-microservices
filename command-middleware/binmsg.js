@@ -182,8 +182,6 @@ function decodeMessage(msgdata) {
 	message.sonar_c = data.readIntBE(9, 1);
 	break;
     case TYPE_BATTERY:
-	console.log("BATTERY:");
-	console.log(data);
 	message.charging = data.readIntBE(0, 1) & 1;
 	message.charge_finished = data.readIntBE(0, 1) & 2;
 	message.battery_voltage = data.readIntBE(1, 2) / 1000.0;
