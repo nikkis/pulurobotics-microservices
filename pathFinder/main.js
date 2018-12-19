@@ -52,7 +52,7 @@ function cleanArea(map, position){
 
     let obstacle = false;
 
-    while(1){
+    while(turns < 10){
         while(!obstacle){
             tmpPos.x += forwardStep*Math.cos(tmpPos.angle)
             tmpPos.y += forwardStep*Math.sin(tmpPos.angle);
@@ -64,9 +64,9 @@ function cleanArea(map, position){
         let turnAngle;
 
         if (turns%2 == 0){
-            turnAngle = -90; // Turn right 90 degrees
+            turnAngle = -(Math.PI)/2; // Turn right 90 degrees
         }
-        else {turnAngle = 90} // Turn left 90 degrees
+        else {turnAngle = (Math.PI)/2} // Turn left 90 degrees
         
         tmpPos.angle += turnAngle; // Turn
         obstacle = checkObstacle(map, tmpPos, forwardStep);
@@ -78,7 +78,8 @@ function cleanArea(map, position){
 
         tmpPos.angle += turnAngle; // Turn
         
-        turns+=1; // Counter number of +-180 degrees turns
+        turns++; // Counter number of +-180 degrees turns
+        console.log("Number of 180 degrees truns is: " + turns);
     }
 
     return coordinateList;
@@ -99,18 +100,20 @@ function checkObstacle(map, position, radius){
     let frontObstacles = [];
     for (var i=0; i<sensorObstacles.length; i++){
         frontObstacles.push(map[
-            position.x + 
+            Math.round(position.x + 
             r*Math.cos(position.angle) + 
-            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle))],
-            [position.y +
+            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle)))],
+            [Math.round(position.y +
             r*Math.sin(position.angle) + 
-            (sensorObstacles[i].x * Math.sin(position.angle) + sensorObstacles[i].y * Math.cos(position.angle))
+            (sensorObstacles[i].x * Math.sin(position.angle) + sensorObstacles[i].y * Math.cos(position.angle)))
             ]);
     }
 
     for(var i=0; i<frontObstacles.length; i++){
-        if (frontObstacles[i] == 1)
+        if (frontObstacles[i] == 1){
             obstacle = true;    
+        }
+        console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
     }
 
     return obstacle;
