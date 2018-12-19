@@ -17,13 +17,13 @@
 *          - the direction (alpha angle from x direction, range from -Pi to Pi) of the robot in the room
 */
 const map = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
@@ -33,12 +33,12 @@ const position = {
     angle: 0
 }
 
-let coordinateList = [];
+// let coordinateList = [];
 coordinateList = cleanArea(map, position);
 
 console.log("Coordinate list: " + coordinateList);
 
-let coordinateList = function cleanArea(map, position){
+function cleanArea(map, position){
     let coordinateList = [];
 
     let tmpPos = {
@@ -85,7 +85,7 @@ let coordinateList = function cleanArea(map, position){
 }
 
 // Returns true if obstacle in front of the robot
-let obstacle = function checkObstacle(map, position, radius){
+function checkObstacle(map, position, radius){
     const r = radius;
     
     //    sensorArray in robot own coordinates
@@ -98,18 +98,20 @@ let obstacle = function checkObstacle(map, position, radius){
     // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
     let frontObstacles = [];
     for (var i=0; i<sensorObstacles.length; i++){
-        frontObstacles.add(map.get(
+        frontObstacles.push(map[
             position.x + 
             r*Math.cos(position.angle) + 
-            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle)),
-            position.y +
+            (sensorObstacles[i].x * Math.cos(position.angle) - sensorObstacles[i].y * Math.sin(position.angle))],
+            [position.y +
             r*Math.sin(position.angle) + 
             (sensorObstacles[i].x * Math.sin(position.angle) + sensorObstacles[i].y * Math.cos(position.angle))
-            ));
+            ]);
     }
 
-    if (frontObstacles.contains(1))
-        obstacle = true;
+    for(var i=0; i<frontObstacles.length; i++){
+        if (frontObstacles[i] == 1)
+            obstacle = true;    
+    }
 
     return obstacle;
 };
