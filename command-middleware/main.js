@@ -130,8 +130,8 @@ io.on("connection", (socket) => {
 	robotSocket.write(cmd);
     });
 
-    socket.on("go_straight", (x, y, mode) => {
-	console.log(`Received go_straight message, x: ${x}, y: ${y}, mode: ${mode}`);
+    socket.on("go_straight", (cmd) => {
+	console.log(`Received go_straight message, x: ${cmd.x}, y: ${cmd.y}, mode: ${cmd.mode}`);
 	var direction;
 	if (mode == "forward") {
 	    direction = 0;
@@ -141,15 +141,15 @@ io.on("connection", (socket) => {
 	    // unknown mode, go forward
 	    direction = 0;
 	}
-	var cmd = Msg.encodeMessage(Msg.TYPE_DEST, "iiB", x, y, direction);
+	var cmd = Msg.encodeMessage(Msg.TYPE_DEST, "iiB", cmd.x, cmd.y, cmd.direction);
 	robotSocket.write(cmd);
 
 	io.sockets.emit("command_received", {command: "go_straight"});
     });
 
-    socket.on("go", (x, y) => {
-	console.log(`Received go message, x: ${x}, y: ${y}`);
-	var cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", x, y, 0);
+    socket.on("go", (cmd) => {
+	console.log(`Received go message, x: ${cmd.x}, y: ${cmd.y}`);
+	var cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", cmd.x, cmd.y, 0);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "go"});
     });
