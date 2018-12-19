@@ -130,18 +130,20 @@ io.on("connection", (socket) => {
 	robotSocket.write(cmd);
     });
 
-    socket.on("go_straight", (point, mode) => {
+    socket.on("go_straight", (point, mode="forward") => {
 	console.log(`Received go_straight message, x: ${point.x}, y: ${point.y}, mode: ${mode}`);
 	var direction;
-	if (mode && mode == "forward") {
+	if (mode == "forward") {
 	    direction = 0;
-	} else if (mode && mode == "backward") {
+	} else if (mode == "backward") {
 	    direction = 1;
 	} else {
 	    // unknown mode, go forward
 	    direction = 0;
 	}
 	var cmd = Msg.encodeMessage(Msg.TYPE_DEST, "iiB", point.x, point.y, direction);
+	console.log("Sending command to robot:");
+	console.log(cmd);
 	robotSocket.write(cmd);
 
 	io.sockets.emit("command_received", {command: "go_straight"});
