@@ -156,6 +156,7 @@ io.on("connection", (socket) => {
 
     socket.on("go_list", (list) => {
 	console.log("Received go_list message");
+	console.log(list);
 	// TODO: implement
     });
 
