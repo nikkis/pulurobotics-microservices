@@ -175,8 +175,9 @@ const robot = {
 	    };
 
 	    if (robot.waypoints && robot.waypoints.length > 0) {
-		console.debug("Result from previous waypoint: ", message.success, ", proceeding to next waypoint");
+		console.debug("Result from previous waypoint:", message.success);
 		const waypoint = robot.waypoints.shift();
+		console.debug("Proceeding to next waypoint:", waypoint);
 		const cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", waypoint.x, waypoint.y, 0);
 		robot.socket.write(cmd);
 	    }
