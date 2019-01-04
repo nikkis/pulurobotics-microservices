@@ -79,6 +79,15 @@ class MapServer {
           }
           ////////////////////////////
 
+          fs.open(this.filePath + filename,'w', function(err,data) {
+            console.log('W', err, data);
+          });
+
+          fs.open(this.filePath + filename,'r+', function(err,data) {
+            console.log('R+', err, data);
+          });
+          ////////
+
           fs.copyFile(this.filePath + filename, MAP_DATA_DIR + filename, (err) => {
             if (err) throw err;
             
