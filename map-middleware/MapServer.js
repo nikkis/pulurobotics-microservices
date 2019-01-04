@@ -45,24 +45,22 @@ class MapServer {
 
     const that = this;
     const handleFile = (filename) => {
-      if (fs.existsSync(this.filePath + filename)) {
-        if (filename && filename.includes(MAP_FILE_EXTENSION)) {
+
+      if (filename && filename.includes(MAP_FILE_EXTENSION)) {
+
+        if (fs.existsSync(this.filePath + filename)) {
 
           console.log('Map file changed: ' + filename);
 
           ////////////////////////////
           if (Config.updateInterval !== -1) {
-
             const minWaitTime = 1000 * Config.updateInterval;
-
             if (this.mapPagePngsGenerated && this.mapPagePngsGenerated[filename]) {
               if (Date.now() - this.mapPagePngsGenerated[filename] < minWaitTime) {
                 console.log('Blocked by Setting: Config.updateInterval', Config.updateInterval);
                 return;
               }
             }
-      
-            // Save timestamp
             this.mapPagePngsGenerated[filename] = Date.now();
           }
           ////////////////////////////
