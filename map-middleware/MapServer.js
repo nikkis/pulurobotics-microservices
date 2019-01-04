@@ -25,6 +25,9 @@ class MapServer {
     // key: map page id, value: png-filename
     this.currentMapFiles = {};
 
+    if (!fs.existsSync(MAP_PNG_DIR)) {
+      fs.mkdirSync(MAP_PNG_DIR);
+    }
 
     // Delete old png map files
     fs.readdir(MAP_PNG_DIR, (err, files) => {
@@ -101,7 +104,7 @@ class MapServer {
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
-        
+
 
         let mapPages = [];
         for (let index = 0; index < files.length; index++) {
@@ -190,10 +193,10 @@ class MapServer {
   }
 
   mapPageData(mapPageId) {
-    return { 
-      mapPageId: mapPageId, 
-      resource: 'images/' + mapPageId + '.png', 
-      timestamp: Date.now() 
+    return {
+      mapPageId: mapPageId,
+      resource: 'images/' + mapPageId + '.png',
+      timestamp: Date.now()
     };
   }
 
