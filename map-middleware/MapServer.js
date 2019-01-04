@@ -8,6 +8,7 @@ const UNUSED_FILENAME_PART = 'acdcabba_0_';
 const MAP_FILE_PNG_EXTENSION = '.png';
 const MAP_FILE_EXTENSION = '.map';
 const MAP_PNG_DIR = 'images/';
+const MAP_DATA_DIR = 'data/';
 
 
 /**
@@ -25,11 +26,24 @@ class MapServer {
     // key: map page id, value: png-filename
     this.currentMapFiles = {};
 
+    // Delete old data
+    if (!fs.existsSync(MAP_DATA_DIR)) {
+      fs.mkdirSync(MAP_DATA_DIR);
+    }
+    fs.readdir(MAP_DATA_DIR, (err, files) => {
+      if (err) throw err;
+      for (const file of files) {
+        fs.unlink(path.join(MAP_DATA_DIR, file), err => {
+          if (err) throw err;
+        });
+      }
+    });
+
+    
+    // Delete old png map files
     if (!fs.existsSync(MAP_PNG_DIR)) {
       fs.mkdirSync(MAP_PNG_DIR);
     }
-
-    // Delete old png map files
     fs.readdir(MAP_PNG_DIR, (err, files) => {
       if (err) throw err;
       for (const file of files) {
@@ -65,8 +79,15 @@ class MapServer {
           }
           ////////////////////////////
 
-          const mapPageId = that.getPageIDFromFilename(filename);
-          that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);
+          fs.copyFile(this.filePath + filename, MAP_DATA_DIR + filename, (err) => {
+            if (err) throw err;
+            
+            const mapPageId = that.getPageIDFromFilename(filename);
+            that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);  
+          });
+          
+
+
 
         } else {
           console.log('File does not exist (yet?)', filename);
@@ -226,7 +247,9 @@ class MapServer {
     try {
 
       const pngFileName = MAP_PNG_DIR + fileName + MAP_FILE_PNG_EXTENSION;
-      const fullPath = Config.mapDataFilePath + fileName;
+      //const fullPath = Config.mapDataFilePath + fileName;
+      const fullPath = MAP_DATA_DIR + fileName;
+      
 
       const cb = (mapPageId) => {
         this.mapFilePngReadyCallback(mapPageId);
