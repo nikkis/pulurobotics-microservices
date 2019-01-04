@@ -76,7 +76,6 @@ class MapServer {
                 return;
               }
             }
-            this.mapPagePngsGenerated[filename] = Date.now();
           }
           ////////////////////////////
 
@@ -88,15 +87,14 @@ class MapServer {
           const fileSizeInBytes = stats.size;
 
           if (fileSizeInBytes !== FILE_SIZE) {
-            console.log('File not ready!');
+            console.log('File not ready!', mapPageId);
             return;
           }
 
           console.log(mapPageId, 'SIZE', fileSizeInBytes);
 
           that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);
-
-
+          this.mapPagePngsGenerated[filename] = Date.now();
 
         } else {
           console.log('File does not exist (yet?)', filename);
