@@ -1,4 +1,4 @@
-const Jimp = require('Jimp');
+const Jimp = require('jimp');
 
 const MAP_CONSTANTS = require('./MapConstants');
 
