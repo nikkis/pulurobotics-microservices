@@ -10,6 +10,7 @@ const MAP_FILE_EXTENSION = '.map';
 const MAP_PNG_DIR = 'images/';
 const MAP_DATA_DIR = 'data/';
 
+const FILE_SIZE = 524288;
 
 /**
  * Gets as parameter @filePath where map files are/will be located, and observes their changes. 
@@ -39,7 +40,7 @@ class MapServer {
       }
     });
 
-    
+
     // Delete old png map files
     if (!fs.existsSync(MAP_PNG_DIR)) {
       fs.mkdirSync(MAP_PNG_DIR);
@@ -79,24 +80,21 @@ class MapServer {
           }
           ////////////////////////////
 
-          fs.copyFile(this.filePath + filename, MAP_DATA_DIR + filename, (err) => {
-            if (err) throw err;
+          fs.copyFileSync(this.filePath + filename, MAP_DATA_DIR + filename);
 
-            const mapPageId = that.getPageIDFromFilename(filename);
+          const mapPageId = that.getPageIDFromFilename(filename);
 
-            const stats = fs.statSync(MAP_DATA_DIR + filename);
-            const fileSizeInBytes = stats.size;
+          const stats = fs.statSync(MAP_DATA_DIR + filename);
+          const fileSizeInBytes = stats.size;
 
-            if(stats.size !== 524288) {
-              console.log('File not ready!');
-              return;
-            }
+          if (fileSizeInBytes !== FILE_SIZE) {
+            console.log('File not ready!');
+            return;
+          }
 
-            console.log(mapPageId, 'SIZE', fileSizeInBytes);
+          console.log(mapPageId, 'SIZE', fileSizeInBytes);
 
-            that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);  
-          });
-          
+          that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);
 
 
 
@@ -260,7 +258,7 @@ class MapServer {
       const pngFileName = MAP_PNG_DIR + fileName + MAP_FILE_PNG_EXTENSION;
       //const fullPath = Config.mapDataFilePath + fileName;
       const fullPath = MAP_DATA_DIR + fileName;
-      
+
       const cb = (mapPageId) => {
         this.mapFilePngReadyCallback(mapPageId);
       };
