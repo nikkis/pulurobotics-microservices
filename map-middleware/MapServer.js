@@ -65,8 +65,6 @@ class MapServer {
 
         if (fs.existsSync(this.filePath + filename)) {
 
-          console.log('Map file changed: ' + filename);
-
           ////////////////////////////
           if (Config.updateInterval !== -1) {
             const minWaitTime = 1000 * Config.updateInterval;
@@ -87,11 +85,9 @@ class MapServer {
           const fileSizeInBytes = stats.size;
 
           if (fileSizeInBytes !== FILE_SIZE) {
-            console.log('File not ready!', mapPageId);
+            console.log('FILE NOT READY!', mapPageId);
             return;
           }
-
-          console.log(mapPageId, 'SIZE', fileSizeInBytes);
 
           that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);
           this.mapPagePngsGenerated[filename] = Date.now();
@@ -175,8 +171,6 @@ class MapServer {
 
   getMapPageImage(req, res) {
     try {
-      console.log('Getting a single map page');
-
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
@@ -187,7 +181,7 @@ class MapServer {
 
       //const pathname = `${MAP_PNG_DIR}${req.params.mapPageId}`;
       const pathname = MAP_PNG_DIR + this.getFilenameFromPageID(req.params.mapPageId);
-      console.log('pathname', pathname);
+
       fs.exists(pathname, function (exist) {
         if (!exist) {
           // if the file is not found, return 404
@@ -224,7 +218,6 @@ class MapServer {
   mapFilePngReadyCallback(mapPageId) {
     console.log('MAP png ready', mapPageId);
     try {
-      console.log('sending..');
       // Send to all instead of just one
       this.io.sockets.emit('map_page_changed', this.mapPageData(mapPageId));
       console.log('sent!');
