@@ -79,12 +79,15 @@ class MapServer {
           }
           ////////////////////////////
 
-         
-
           fs.copyFile(this.filePath + filename, MAP_DATA_DIR + filename, (err) => {
             if (err) throw err;
-            
+
             const mapPageId = that.getPageIDFromFilename(filename);
+
+            const stats = fs.statSync(MAP_DATA_DIR + filename);
+            const fileSizeInBytes = stats.size;
+            console.log(mapPageId, 'SIZE', fileSizeInBytes);
+
             that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);  
           });
           
@@ -252,7 +255,6 @@ class MapServer {
       //const fullPath = Config.mapDataFilePath + fileName;
       const fullPath = MAP_DATA_DIR + fileName;
       
-
       const cb = (mapPageId) => {
         this.mapFilePngReadyCallback(mapPageId);
       };
