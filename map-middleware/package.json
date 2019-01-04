@@ -18,7 +18,11 @@
     "nodemon": "^1.18.7"
   },
   "dependencies": {
+    "chokidar": "^2.0.4",
     "express": "^4.16.4",
-    "socket.io": "^2.2.0"
+    "jimp": "^0.6.0",
+    "js-md5": "^0.7.3",
+    "socket.io": "^2.2.0",
+    "wait-on": "^3.2.0"
   }
 }
