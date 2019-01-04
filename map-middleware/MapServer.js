@@ -86,6 +86,12 @@ class MapServer {
 
             const stats = fs.statSync(MAP_DATA_DIR + filename);
             const fileSizeInBytes = stats.size;
+
+            if(stats.size !== 524288) {
+              console.log('File not ready!');
+              return;
+            }
+
             console.log(mapPageId, 'SIZE', fileSizeInBytes);
 
             that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);  

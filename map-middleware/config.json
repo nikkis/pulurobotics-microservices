@@ -1,5 +1,5 @@
 {
-  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v3/map-testbed/_workingdir/",
+  "mapDataFilePath": "/home/hrst/rn1-host/",
   "port": 8080,
   "updateInterval": 1.5
 }
