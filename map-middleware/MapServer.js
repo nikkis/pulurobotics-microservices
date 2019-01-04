@@ -89,6 +89,7 @@ class MapServer {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+      res.setHeader('Cache-Control', 'no-cache');
 
       fs.readdir(MAP_PNG_DIR, (err, files) => {
         try {
@@ -134,6 +135,7 @@ class MapServer {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+      res.setHeader('Cache-Control', 'no-cache');
 
       //const pathname = `${MAP_PNG_DIR}${req.params.mapPageId}`;
       const pathname = MAP_PNG_DIR + this.getFilenameFromPageID(req.params.mapPageId);
