@@ -1,4 +1,5 @@
 {
   "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v3/map-testbed/_workingdir/",
-  "port": 8080
+  "port": 8080,
+  "updateInterval": 1.5
 }
