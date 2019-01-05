@@ -1,4 +1,6 @@
 const MAP_DIM = 256;
+const FILE_SIZE = 524288;
+const MAP_PAGES_NUM = 10;
 
 // Map data format
 const MAP_BIN = {
@@ -27,6 +29,8 @@ const MAP_COLORS = {
 
 module.exports = {
   MAP_DIM,
+  FILE_SIZE,
+  MAP_PAGES_NUM,
   MAP_BIN,
   MAP_COLORS
 };

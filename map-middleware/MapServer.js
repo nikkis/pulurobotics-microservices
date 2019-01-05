@@ -1,5 +1,7 @@
-const BinaryToPng = require('./BinaryToPng');
 const Config = require('./config.json');
+
+const BinaryToPng = require('./BinaryToPng');
+const CleaningPathFinder = require('./CleaningPathFinder');
 
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +12,7 @@ const MAP_FILE_EXTENSION = '.map';
 const MAP_PNG_DIR = 'images/';
 const MAP_DATA_DIR = 'data/';
 
-const FILE_SIZE = 524288;
+const MAP_CONSTANTS = require('./MapConstants');
 
 /**
  * Gets as parameter @filePath where map files are/will be located, and observes their changes. 
@@ -84,7 +86,7 @@ class MapServer {
           const stats = fs.statSync(MAP_DATA_DIR + filename);
           const fileSizeInBytes = stats.size;
 
-          if (fileSizeInBytes !== FILE_SIZE) {
+          if (fileSizeInBytes !== MAP_CONSTANTS.FILE_SIZE) {
             console.log('FILE NOT READY!', mapPageId);
             return;
           }
@@ -119,6 +121,17 @@ class MapServer {
     fs.watch(this.filePath, {
       persistent: true
     }, (event, filename) => { handleFile(filename, this.mapFilePngReadyCallback) });
+
+
+    // Path finder
+    try {
+      this.pathFinder = new CleaningPathFinder();
+
+      //this.pathFinder.setMapPageConstraints(null, 'acdcabba_0_127_127');
+  
+    } catch (error) {
+      console.error(error);
+    }
   }
 
 
@@ -281,6 +294,24 @@ class MapServer {
     let mapPageID = filename.split('.map')[0];
     return mapPageID;
   }
+
+  getPageIndexFromPageId(pageId) {
+    let robotId, worldId, x, y;
+    [robotId, worldId, x, y] = pageId.split('_');
+    return {
+      x: parseInt(x),
+      y: parseInt(y)
+    };
+  }
+
+  //// Path finder
+
+
+
+
+
+
+
 }
 
 
