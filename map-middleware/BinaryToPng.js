@@ -1,3 +1,26 @@
+
+/*
+    // Map unit is a 40mm*40mm area. Memory usage is carefully considered, because the world is a 2D map of the map units.
+    // 40mm*40mm was selected as a good compromise between accuracy (i.e., considering that the 500mm wide robot can maneuver through
+    // tight passages, which would be wasteful if the unit was larger) and memory/disk usage.
+
+    typedef struct __attribute__ ((packed))
+    {
+      uint8_t result;   	// Mapping result decided based on all available data.
+      uint8_t latest;  	// Mapping result based on last scan.
+
+      uint8_t timestamp;	// Latest time scanned
+      uint8_t num_visited;    // Incremented when lidar is mapped with this robot coord. Saturated at 255.
+
+      uint8_t num_seen;  	// Number of times mapped. Saturated at 255.
+      uint8_t num_obstacles;  // "is an obstacle" BY LIDAR counter. Every time mapped, ++ if obstacle, -- if not. Saturated at 255.
+
+      uint8_t constraints;
+      uint8_t num_3d_obstacles; // ++ if 3D_WALL, DROP, or ITEM. Set to 0 if those are removed.
+    } map_unit_t;
+    */
+
+
 const Jimp = require('jimp');
 
 const MAP_CONSTANTS = require('./MapConstants');
