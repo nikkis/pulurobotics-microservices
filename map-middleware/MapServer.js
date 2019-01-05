@@ -6,7 +6,6 @@ const CleaningPathFinder = require('./CleaningPathFinder');
 const fs = require('fs');
 const path = require('path');
 
-const UNUSED_FILENAME_PART = 'acdcabba_0_';
 const MAP_FILE_PNG_EXTENSION = '.png';
 const MAP_FILE_EXTENSION = '.map';
 const MAP_PNG_DIR = 'images/';
@@ -126,9 +125,6 @@ class MapServer {
     // Path finder
     try {
       this.pathFinder = new CleaningPathFinder();
-
-      //this.pathFinder.setMapPageConstraints(null, 'acdcabba_0_127_127');
-  
     } catch (error) {
       console.error(error);
     }
@@ -192,7 +188,7 @@ class MapServer {
       res.header('Expires', '-1');
       res.header('Pragma', 'no-cache');
 
-      //const pathname = `${MAP_PNG_DIR}${req.params.mapPageId}`;
+
       const pathname = MAP_PNG_DIR + this.getFilenameFromPageID(req.params.mapPageId);
 
       fs.exists(pathname, function (exist) {
@@ -263,9 +259,13 @@ class MapServer {
       //const fullPath = Config.mapDataFilePath + fileName;
       const fullPath = MAP_DATA_DIR + fileName;
 
-      const cb = (mapPageId) => {
+      const notifyCB = (mapPageId) => {
         this.mapFilePngReadyCallback(mapPageId);
       };
+
+      const constraintsCB = (constraints, mapPageId) => {
+        this.setMapPageConstraintsCB(constraints, mapPageId);
+      }
 
       fs.readFile(fullPath, null, function (err, data) {
         try {
@@ -273,7 +273,7 @@ class MapServer {
           if (err) throw err;
           const imgData = new Uint8Array(data.buffer);
           const binaryToPng = new BinaryToPng(imgData);
-          binaryToPng.generateImageToFile(pngFileName, mapPageId, cb);
+          binaryToPng.generateImageToFile(pngFileName, mapPageId, notifyCB, constraintsCB);
         } catch (error) {
           console.error(error);
         }
@@ -295,17 +295,22 @@ class MapServer {
     return mapPageID;
   }
 
-  getPageIndexFromPageId(pageId) {
-    let robotId, worldId, x, y;
-    [robotId, worldId, x, y] = pageId.split('_');
-    return {
-      x: parseInt(x),
-      y: parseInt(y)
-    };
-  }
+
 
   //// Path finder
 
+  /**
+   * Method is called when map png image has been created
+   * @param mapPageConstraints two-dimensional array
+   * 
+   */
+  setMapPageConstraintsCB(mapPageConstraints, mapPageId) {
+    try {
+      this.pathFinder.setMapPageConstraints(mapPageConstraints, mapPageId);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
 
 

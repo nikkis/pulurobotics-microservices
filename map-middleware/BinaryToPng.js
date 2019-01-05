@@ -9,9 +9,18 @@ class BinaryToPng {
     this.imageData = null;
   }
 
-  generateImageToFile(src, mapPageId, next=null) {
+  generateImageToFile(src, mapPageId, notifyCB, constraintsCB = null) {
 
     try {
+
+      ////// Constraints
+      let mapPageConstraints = new Array(MAP_CONSTANTS.MAP_DIM);
+      for (let i = 0; i < mapPageConstraints.length; ++i) {
+        mapPageConstraints[i] = new Array(MAP_CONSTANTS.MAP_DIM);
+      }
+      //////
+
+
       let aByte, byteStr;
 
       this.imageData = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
@@ -31,17 +40,31 @@ class BinaryToPng {
         const color = this.getColorForCoordinate(byteStr);
         this.imageData[y][x] = color;
 
+        ////// Constraints
+        if (color !== MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_FREE) {
+          mapPageConstraints[y][x] = 1;
+        } else {
+          mapPageConstraints[y][x] = 0;
+        }
+        //////
+
         y++;
       }
 
-      this.writePngFile(src, mapPageId, next);
+      this.writePngFile(src, mapPageId, notifyCB);
+
+      ////// Constraints
+      if(constraintsCB) {
+        constraintsCB(mapPageConstraints, mapPageId);
+      }
+      //////
 
     } catch (error) {
       console.error(error);
     }
   }
 
-  writePngFile(src, mapPageId, next=null) {
+  writePngFile(src, mapPageId, notifyCB) {
 
     console.log('Writing img', mapPageId);
 
@@ -60,8 +83,8 @@ class BinaryToPng {
         image.write(src, (err) => {
           if (err) throw err;
           console.log('Finished!');
-          if(next) {
-            next(mapPageId);
+          if (notifyCB) {
+            notifyCB(mapPageId);
           }
         });
 

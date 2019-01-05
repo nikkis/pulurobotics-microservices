@@ -24,7 +24,7 @@ class CleaningPathFinder {
       x: ((X_CONSTRAINTS_MAP_PAGES / 2) - 1) * MAP_CONSTANTS.MAP_DIM
     };
 
-    console.log('firstMapPageIndex_x', this.firstMapPageIndex.x, 'firstMapPageIndex_y', this.firstMapPageIndex.y);
+    //console.log('firstMapPageIndex_x', this.firstMapPageIndex.x, 'firstMapPageIndex_y', this.firstMapPageIndex.y);
 
     this.constraintsMap = new Array(Y_CONSTRAINTS_MAP_PAGES * MAP_CONSTANTS.MAP_DIM);
     for (let i = 0; i < this.constraintsMap.length; ++i) {
@@ -40,10 +40,11 @@ class CleaningPathFinder {
    */
   setMapPageConstraints(mapPageConstraints, mapPageId) {
     try {
+      
       const firstPageIndexY = 127;
       const firstPageIndexX = 127;
 
-      const pageIndex = this.getPageIndexFromPageId('acdcabba_0_127_127');
+      const pageIndex = this.getPageIndexFromPageId(mapPageId);
 
       const xIndex = (pageIndex.x - firstPageIndexX) * MAP_CONSTANTS.MAP_DIM + this.firstMapPageIndex.x;
       const yIndex = (pageIndex.y - firstPageIndexY) * MAP_CONSTANTS.MAP_DIM + this.firstMapPageIndex.y;
@@ -59,13 +60,23 @@ class CleaningPathFinder {
         mapPageY++;
       }
 
-      console.log('2 this.constraintsMap', this.constraintsMap);
       return;
 
     } catch (error) {
       console.error('Error while setting map page constraints', mapPageId, error);
       return;
     }
+  }
+
+  // Helpers
+
+  getPageIndexFromPageId(pageId) {
+    let robotId, worldId, x, y;
+    [robotId, worldId, x, y] = pageId.split('_');
+    return {
+      x: parseInt(x),
+      y: parseInt(y)
+    };
   }
 
 }
