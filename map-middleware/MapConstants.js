@@ -26,10 +26,17 @@ const MAP_COLORS = {
   COLOR_UNIT_DROP: 0xefa630ff, //           #efa630
   COLOR_UNIT_DBG: 0x000000ff, //            #000000
 
+  COLOR_UNIT_MAPPED: Jimp.cssColorToHex('#b4f9b7'),
+  COLOR_UNIT_MAPPED_1: Jimp.cssColorToHex('#b4d6aa'),
+  COLOR_UNIT_MAPPED_2: Jimp.cssColorToHex('#b3d4a9'),
+  COLOR_UNIT_MAPPED_3: Jimp.cssColorToHex('#a9caa1')
+
+  /*
   COLOR_UNIT_MAPPED: Jimp.rgbaToInt(211, 233, 189, 100), //          #b4f9b7
   COLOR_UNIT_MAPPED_1: Jimp.rgbaToInt(201, 227, 175, 100), //         #b4d6aa
   COLOR_UNIT_MAPPED_2: Jimp.rgbaToInt(153, 202, 103, 100), //         #b3d4a9
   COLOR_UNIT_MAPPED_3: Jimp.rgbaToInt(140, 195, 85, 100) //          #a9caa1
+  */
 };
 
 
