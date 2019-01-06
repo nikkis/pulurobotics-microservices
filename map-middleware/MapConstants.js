@@ -1,3 +1,5 @@
+const Jimp = require('jimp');
+
 const MAP_DIM = 256;
 const FILE_SIZE = 524288;
 const MAP_PAGES_NUM = 10;
@@ -23,7 +25,11 @@ const MAP_COLORS = {
   COLOR_UNIT_3D_WALL: 0xf4064aff, //        #f4064a
   COLOR_UNIT_DROP: 0xefa630ff, //           #efa630
   COLOR_UNIT_DBG: 0x000000ff, //            #000000
-  COLOR_UNIT_MAPPED: 0xb4f9b7ff //          #b4f9b7
+
+  COLOR_UNIT_MAPPED: Jimp.rgbaToInt(211, 233, 189, 100), //          #b4f9b7
+  COLOR_UNIT_MAPPED_1: Jimp.rgbaToInt(201, 227, 175, 100), //         #b4d6aa
+  COLOR_UNIT_MAPPED_2: Jimp.rgbaToInt(153, 202, 103, 100), //         #b3d4a9
+  COLOR_UNIT_MAPPED_3: Jimp.rgbaToInt(140, 195, 85, 100) //          #a9caa1
 };
 
 

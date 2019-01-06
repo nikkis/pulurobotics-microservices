@@ -44,7 +44,7 @@ class BinaryToPng {
       //////
 
 
-      let aByte, byteStr;
+      let aByte, byteStr, numVisited;
 
       this.imageData = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
 
@@ -54,13 +54,20 @@ class BinaryToPng {
         aByte = this.data[i];
         byteStr = aByte.toString(2);
 
+
+        try {
+          numVisited = this.data[i + 3];
+        } catch (error) {
+          console.error(error);
+        }
+
         // Check for rows
         if (y === MAP_CONSTANTS.MAP_DIM) {
           y = 0;
           ++x;
         }
 
-        const color = this.getColorForCoordinate(byteStr);
+        const color = this.getColorForCoordinate(byteStr, numVisited);
         this.imageData[y][x] = color;
 
         ////// Constraints
@@ -77,7 +84,7 @@ class BinaryToPng {
       this.writePngFile(src, mapPageId, notifyCB);
 
       ////// Constraints
-      if(constraintsCB) {
+      if (constraintsCB) {
         constraintsCB(mapPageConstraints, mapPageId);
       }
       //////
@@ -120,7 +127,7 @@ class BinaryToPng {
 
 
 
-  getColorForCoordinate(binary) {
+  getColorForCoordinate(binary, numVisited = null) {
 
     if (binary.length === 1 && binary === '0')
       return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_FREE;
@@ -151,8 +158,17 @@ class BinaryToPng {
 
 
     elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_MAPPED
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED;
+    if ((binary & elemetMask) === elemetMask) {
+      if (numVisited && numVisited >= 3) {
+        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED_3;
+      } else if (numVisited && numVisited === 2) {
+        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED_2;
+      } else if (numVisited && numVisited === 1) {
+        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED_1;
+      } else {
+        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED;
+      }
+    }
 
 
     //console.log('Should no be the case');
