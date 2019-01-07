@@ -23,7 +23,7 @@ const TYPE_SYNCREQ = 436;
 const TYPE_DBGPOINT = 137;
 const TYPE_HMAP = 138;
 const TYPE_INFOSTATE = 439;
-const TYPE_ROBOTINFO = 140;
+const TYPE_ROBOTINFO = 440;
 const TYPE_LIDAR_HIGHRES = 141;
 const TYPE_PICTURE = 142;
 const TYPE_MOVEMENT_STATUS = 143;
@@ -245,17 +245,7 @@ function decodeMessage(msgdata) {
 	// This message has no payload
 	break;
     case TYPE_ROBOTINFO:
-	// TODO: check
-	try {
-	    //console.log(`Opcode ${opcode} not verified.`);
-	    message.robot_size_x = data.readIntBE(0, 2);
-	    message.robot_size_y = data.readIntBE(2, 2);
-	    message.lidar_offset_x = data.readIntBE(4, 2);
-	    message.lidar_offset_y = data.readIntBE(6, 2);
-	} catch (err) {
-	    console.warn("Error while parsing robot info");
-	    console.warn(err);
-	}
+	// This message has no payload
 	break;
     case TYPE_PICTURE:
 	//console.log(`Opcode ${opcode} not verified.`);
