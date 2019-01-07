@@ -29,7 +29,7 @@ const TYPE_PICTURE = 142;
 const TYPE_MOVEMENT_STATUS = 443;
 const TYPE_ROUTE_STATUS = 444;
 const TYPE_STATEVECT = 145;
-const TYPE_LOCALIZATION_RESULT = 146;
+const TYPE_LOCALIZATION_RESULT = 446;
 
 // Private constants
 const BIN_HEADER_LENGTH = 5;
@@ -354,8 +354,7 @@ function decodeMessage(msgdata) {
 	
 	break;
     case TYPE_LOCALIZATION_RESULT:
-	// TODO: How does this work? Is it needed?
-	//console.log(`Opcode ${opcode} not verified.`);
+	// This message has no payload
 	break;
 
     default:
