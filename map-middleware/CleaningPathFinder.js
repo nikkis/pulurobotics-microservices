@@ -9,9 +9,26 @@ class CleaningPathFinder {
     this.constraintsMap = [];
     this.firstMapPageIndex = { x: 0, y: 0 };
 
-    this.initConstraintsMapPages();
+    const testmode = true;
 
-    // Do any other init stuff here
+    if (testmode){
+      this.constraintsMap = [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+      ];
+    }
+    else{
+
+      //this.initConstraintsMapPages();
+
+      // Do any other init stuff here
+    }
 
   }
 
@@ -33,7 +50,7 @@ class CleaningPathFinder {
     }
   }
 
-// robotSize: dimension (i.e. dx, dy) of the robot 
+// robotSize: dimension (i.e. dx, dy) of the robot  // check data structures size_x size_y (from robot.js)
 
 // Private attributes
 // _tmpPos: temporary position (i.e. x, y, angle) while computing coverage path
@@ -96,10 +113,10 @@ class CleaningPathFinder {
             return coordinateList;
   }
 
-  setRobotSize(dx, dy){
+  setRobotSize(size_x, size_y){
     this.robotSize = {
-      dx: dx,
-      dy: dy
+      dx: size_x,
+      dy: size_y
     }
   }
 
@@ -109,7 +126,7 @@ class CleaningPathFinder {
 
     let Y = - Math.round(this.robotSize.dx/2);
     for (var i = 0; i<this.robotSize.dx; i++){
-      let Y += i;
+      Y += i;
       if (this.robotSize.dx%2 == 0){
         if(Y==0){
           Y++;
