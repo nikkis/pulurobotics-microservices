@@ -312,9 +312,10 @@ class MapServer {
       let coordinates;
       if(req.query.startX && req.query.startY) {
         coordinates = {
-          x: req.query.startX,
-          y: req.query.startY
+          x: parseInt(req.query.startX),
+          y: parseInt(req.query.startY)
         };
+        console.log(coordinates);
       } else {
         throw 'Give both startX and startY as query parameters';
       }

@@ -53,7 +53,7 @@ class BinaryToPng {
     this.data = binary;
     this.imageData = null;
 
-   
+
     const VOXMAP_ALPHA = 255;
 
     this.colors = [
@@ -126,13 +126,20 @@ class BinaryToPng {
           ++y;
         }
 
-        this.imageData[y][x] = this.voxmapBlankColor;
+        /////// Constraints
+        mapPageConstraints[y][x] = 0;
+        /////// Constraints
 
+        this.imageData[y][x] = this.voxmapBlankColor;
         aByte = voxelData[i];
         byteStr = aByte.toString(2);
         for (let slice = 0; slice < byteStr.length; slice++) {
           if (aByte & (1 << slice)) {
             this.imageData[y][x] = this.colors[slice];
+
+            /////// Constraints
+            mapPageConstraints[y][x] = 1;
+            /////// Constraints
           }
         }
 
@@ -140,7 +147,11 @@ class BinaryToPng {
         byteStr = bByte.toString(2);
         for (let slice = 0; slice < byteStr.length; slice++) {
           if (bByte & (1 << slice)) {
-            this.imageData[y][x] = this.colors[8+slice];
+            this.imageData[y][x] = this.colors[8 + slice];
+
+            /////// Constraints
+            mapPageConstraints[y][x] = 1;
+            /////// Constraints
           }
         }
 
@@ -189,7 +200,7 @@ for (let i = 0; i < tempImgPixels.length; i++) {
       ////// Constraints
       if (constraintsCB) {
         try {
-          //constraintsCB(mapPageConstraints, mapPageId);
+          constraintsCB(mapPageConstraints, mapPageId);
         } catch (error) {
           console.error(error);
         }
