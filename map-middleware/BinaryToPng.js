@@ -47,6 +47,7 @@ const Jimp = require('jimp');
 
 const MAP_CONSTANTS = require('./MapConstants');
 
+const constraintsHeight = 3;
 
 class BinaryToPng {
   constructor(binary) {
@@ -138,7 +139,8 @@ class BinaryToPng {
             this.imageData[y][x] = this.colors[slice];
 
             /////// Constraints
-            mapPageConstraints[y][x] = 1;
+            if(slice > constraintsHeight)
+              mapPageConstraints[y][x] = 1;
             /////// Constraints
           }
         }
@@ -150,7 +152,8 @@ class BinaryToPng {
             this.imageData[y][x] = this.colors[8 + slice];
 
             /////// Constraints
-            mapPageConstraints[y][x] = 1;
+            if(slice > constraintsHeight)
+              mapPageConstraints[y][x] = 1;
             /////// Constraints
           }
         }
@@ -291,9 +294,6 @@ for (let i = 0; i < tempImgPixels.length; i++) {
 
     //console.log('Should no be the case');
     return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_FREE;
-
-
-
 
   }
 };
