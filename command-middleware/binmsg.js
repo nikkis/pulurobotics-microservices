@@ -18,21 +18,21 @@ const TYPE_LIDAR_LOWRES = 131;
 const TYPE_DBG = 132;
 const TYPE_SONAR = 133;
 const TYPE_BATTERY = 134;
-const TYPE_ROUTEINFO = 135;
-const TYPE_SYNCREQ = 136;
+const TYPE_ROUTEINFO = 435;
+const TYPE_SYNCREQ = 436;
 const TYPE_DBGPOINT = 137;
 const TYPE_HMAP = 138;
-const TYPE_INFOSTATE = 139;
-const TYPE_ROBOTINFO = 140;
+const TYPE_INFOSTATE = 439;
+const TYPE_ROBOTINFO = 440;
 const TYPE_LIDAR_HIGHRES = 141;
 const TYPE_PICTURE = 142;
-const TYPE_MOVEMENT_STATUS = 143;
-const TYPE_ROUTE_STATUS = 144;
+const TYPE_MOVEMENT_STATUS = 443;
+const TYPE_ROUTE_STATUS = 444;
 const TYPE_STATEVECT = 145;
-const TYPE_LOCALIZATION_RESULT = 146;
+const TYPE_LOCALIZATION_RESULT = 446;
 
 // Private constants
-const BIN_HEADER_LENGTH = 3;
+const BIN_HEADER_LENGTH = 5;
 const STATE_VECT_LENGTH = 16;
 
 /**
@@ -128,9 +128,9 @@ function encodeMessage() {
 function decodeMessage(msgdata) {
     assert(msgdata != undefined, "Must specify data");
 
-    var opcode = msgdata.readUIntBE(0, 1);
-    var length = msgdata.readUIntBE(1, 2);
-    var data = msgdata.slice(3);
+    var opcode = msgdata.readUIntBE(0, 2);
+    var length = msgdata.readUIntBE(2, 3);
+    var data = msgdata.slice(5);
 
     var message = {
 	type: opcode,
@@ -143,9 +143,7 @@ function decodeMessage(msgdata) {
 	message.robot_angle = data.readUIntBE(0, 2) / 65536.0 * 360.0;
 	message.robot_x = data.readIntBE(2, 4);
 	message.robot_y = data.readIntBE(6, 4);
-	if (length > 10) {
-	    // TODO: handle cur_cmd_status
-	}
+	// TODO: handle cmd_state
 	break;
     case TYPE_LIDAR_LOWRES:
 	//console.log("decoding TYPE_LIDAR_LOWRES");
@@ -194,14 +192,13 @@ function decodeMessage(msgdata) {
 	message.route_start_x = data.readIntBE(0, 4);
 	message.route_start_y = data.readIntBE(4, 4);
 
-	var num_elements = Math.trunc(length / 9);
 	message.route_points = [];
-	
-	for (var i = 0; i < num_elements; i++) {
-	    var point = {}
-	    point.backmode = data.readIntBE(i * 9 + 8, 1);
-	    point.x = data.readIntBE(i * 9 + 9, 4);
-	    point.y = data.readIntBE(i * 9 + 13, 4);
+
+	for (var i = 8; i < data.length; i += 9) {
+	    var point = {};
+	    point.backmode = data.readIntBE(i, 1);
+	    point.x = data.readIntBE(i + 1, 4);
+	    point.y = data.readIntBE(i + 5, 4);
 	    message.route_points.push(point);
 	}
 	break;
@@ -245,44 +242,10 @@ function decodeMessage(msgdata) {
 	data.copy(message.hmap_data, 0, 15);
 	break;
     case TYPE_INFOSTATE:
-	// TODO: check
-	// TODO: consider a lookup table instead
-	//console.log(`Opcode ${opcode} not verified.`);
-	var info_state = data.readIntBE(0, 1);
-	if (info_state == -1) {
-	    message.info_state = "undefined";
-	} else if (info_state == 0) {
-	    message.info_state = "idle";
-	} else if (info_state == 1) {
-	    message.info_state = "think";
-	} else if (info_state == 2) {
-	    message.info_state = "forward";
-	} else if (info_state == 3) {
-	    message.info_state = "reverse";
-	} else if (info_state == 4) {
-	    message.info_state = "left";
-	} else if (info_state == 5) {
-	    message.info_state = "right";
-	} else if (info_state == 6) {
-	    message.info_state = "charging";
-	} else if (info_state == 7) {
-	    message.info_state = "daijuing";
-	} else {
-	    return undefined; // TODO: confirm that this is a good way to signal invalid data
-	}
+	// This message has no payload
 	break;
     case TYPE_ROBOTINFO:
-	// TODO: check
-	try {
-	    //console.log(`Opcode ${opcode} not verified.`);
-	    message.robot_size_x = data.readIntBE(0, 2);
-	    message.robot_size_y = data.readIntBE(2, 2);
-	    message.lidar_offset_x = data.readIntBE(4, 2);
-	    message.lidar_offset_y = data.readIntBE(6, 2);
-	} catch (err) {
-	    console.warn("Error while parsing robot info");
-	    console.warn(err);
-	}
+	// This message has no payload
 	break;
     case TYPE_PICTURE:
 	//console.log(`Opcode ${opcode} not verified.`);
@@ -391,8 +354,11 @@ function decodeMessage(msgdata) {
 	
 	break;
     case TYPE_LOCALIZATION_RESULT:
-	// TODO: How does this work? Is it needed?
-	//console.log(`Opcode ${opcode} not verified.`);
+	// This message has no payload
+	break;
+
+    default:
+	console.log("Unknown message, opcode", opcode, "length", length, "data:", data);
 	break;
     }
 

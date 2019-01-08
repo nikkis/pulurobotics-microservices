@@ -30,11 +30,13 @@ robotSocket.on("ready", () => {
     console.log("Robot client socket is ready.");
 });
 
-const WANT_OPCODE = 0;
-const WANT_LENGTH1 = 1;
-const WANT_LENGTH2 = 2;
-const WANT_DATA = 3;
-var data_parser_state = WANT_OPCODE;
+const WANT_OPCODE1 = 0;
+const WANT_OPCODE2 = 1;
+const WANT_LENGTH1 = 2;
+const WANT_LENGTH2 = 3;
+const WANT_LENGTH3 = 4;
+const WANT_DATA = 5;
+var data_parser_state = WANT_OPCODE1;
 var opcode, data_length, target_buf_pos, buffer, tmpbuf;
 robotSocket.on("data", (data) => {
     //console.debug("***********************")
@@ -44,27 +46,42 @@ robotSocket.on("data", (data) => {
     for (var i = 0; i < data.length; i++) {
 	
 	switch (data_parser_state) {
-	case WANT_OPCODE:
-	    //console.debug("parser: looking for opcode");
-	    opcode = data.readUIntBE(i, 1);
+	case WANT_OPCODE1:
+	    //console.debug("parser: looking for 1st opcode byte");
+	    tmpbuf = Buffer.alloc(2);
+	    data.copy(tmpbuf, 0, i, i+1);
+	    data_parser_state = WANT_OPCODE2;
+	    break;
+
+	case WANT_OPCODE2:
+	    //console.debug("parser: looking for 2nd opcode byte");
+	    data.copy(tmpbuf, 1, i, i+1);
+	    opcode = tmpbuf.readUIntBE(0, 2);
 	    data_parser_state = WANT_LENGTH1;
 	    //console.debug(`parser: opcode ${opcode} found`);
 	    break;
 	    
 	case WANT_LENGTH1:
 	    //console.debug("parser: looking for 1st length byte");
-	    tmpbuf = Buffer.alloc(2);
+	    tmpbuf = Buffer.alloc(3);
 	    data.copy(tmpbuf, 0, i, i+1);
 	    data_parser_state = WANT_LENGTH2;
 	    break;
-	    
+
 	case WANT_LENGTH2:
 	    //console.debug("parser: looking for 2nd length byte");
 	    data.copy(tmpbuf, 1, i, i+1);
-	    data_length = tmpbuf.readUIntBE(0, 2);
-	    buffer = Buffer.alloc(data_length + 3);
-	    data.copy(buffer, 0, i-2, i+1);
-	    target_buf_pos = 3;
+	    data_parser_state = WANT_LENGTH3;
+	    break;
+
+	case WANT_LENGTH3:
+	    //console.debug("parser: looking for 3rd length byte");
+	    data.copy(tmpbuf, 2, i, i+1);
+	    data_length = tmpbuf.readUIntBE(0, 3);
+	    buffer = Buffer.alloc(data_length + 5);
+	    buffer.writeUIntBE(opcode, 0, 2);
+	    buffer.writeUIntBE(data_length, 2, 3);
+	    target_buf_pos = 5;
 	    data_parser_state = WANT_DATA;
 	    //console.debug(`parser: length is ${data_length}`);
 	    break;
@@ -74,7 +91,7 @@ robotSocket.on("data", (data) => {
 	    data.copy(buffer, target_buf_pos, i, i+1);
 	    target_buf_pos++;
 	    //console.debug(`target_buf_pos: ${target_buf_pos}, data_length: ${data_length}`);
-	    if (target_buf_pos - 3 == data_length) {
+	    if (target_buf_pos - 5 == data_length) {
 		//console.debug("parser: end of data, message ready");
 		//console.debug("parser: about to decode, message dump follows");
 		//console.debug(buffer.toString("hex"));
@@ -87,7 +104,7 @@ robotSocket.on("data", (data) => {
 		    //console.debug(payload);
 		    io.sockets.emit(return_message, payload);
 		}
-		data_parser_state = WANT_OPCODE;
+		data_parser_state = WANT_OPCODE1;
 		break;
 	    }
 	    //console.debug("parser: more data expected");
