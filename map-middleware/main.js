@@ -17,6 +17,7 @@ const mapServer = new MapServer(io);
 
 app.get('/', (req, res) => mapServer.getAllMapFiles(req, res));
 app.get('/images/:mapPageId.png', (req, res) => mapServer.getMapPageImage(req, res));
+app.get('/cleaningPath', (req, res) => mapServer.getCleaningPath(req, res));
 
 
 io.on('connection', function (socket) {
