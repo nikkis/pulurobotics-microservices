@@ -1,13 +1,23 @@
 const CleaningPathFinder = require('./CleaningPathFinder');
 const testmode = true;
-this.pathFinder = new CleaningPathFinder();
+
+try{
+    this.pathFinder = new CleaningPathFinder(testmode);
+}
+catch(error){
+    console.error(error);
+}
 let position = {
-    x: 3,
-    y:4,
-    angle: 90
+    x: 2,
+    y: 2,
+    angle: 45
 };
 
-pathfinder.setRobotSize(2, 2);
-pathFinder.getPath(position);
+let robotSize = {
+    size_x:2,
+    size_y:2
+};
 
-console.log('moi');
+//this.pathfinder.setRobotSize(robotSize.size_x,robotSize.size_y);
+
+this.pathFinder.getPath(position);
