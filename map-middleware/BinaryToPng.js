@@ -58,22 +58,22 @@ class BinaryToPng {
     const VOXMAP_ALPHA = 255;
 
     this.colors = [
-      /* 0       */ Jimp.rgbaToInt(220, 50, 220, VOXMAP_ALPHA),
-      /* 1       */ Jimp.rgbaToInt(140, 50, 220, VOXMAP_ALPHA),
-      /* 2       */ Jimp.rgbaToInt(100, 120, 220, VOXMAP_ALPHA),
-      /* 3       */ Jimp.rgbaToInt(20, 100, 240, VOXMAP_ALPHA),
-      /* 4       */ Jimp.rgbaToInt(0, 130, 200, VOXMAP_ALPHA),
-      /* 5       */ Jimp.rgbaToInt(0, 160, 160, VOXMAP_ALPHA),
-      /* 6       */ Jimp.rgbaToInt(0, 200, 130, VOXMAP_ALPHA),
-      /* 7       */ Jimp.rgbaToInt(0, 220, 70, VOXMAP_ALPHA),
-      /* 8       */ Jimp.rgbaToInt(0, 250, 0, VOXMAP_ALPHA),
-      /* 9       */ Jimp.rgbaToInt(50, 220, 0, VOXMAP_ALPHA),
-      /* 10      */ Jimp.rgbaToInt(90, 190, 0, VOXMAP_ALPHA),
-      /* 11      */ Jimp.rgbaToInt(120, 150, 0, VOXMAP_ALPHA),
-      /* 12      */ Jimp.rgbaToInt(150, 120, 0, VOXMAP_ALPHA),
-      /* 13      */ Jimp.rgbaToInt(190, 90, 0, VOXMAP_ALPHA),
-      /* 14      */ Jimp.rgbaToInt(220, 50, 0, VOXMAP_ALPHA),
-      /* 15      */ Jimp.rgbaToInt(250, 0, 0, VOXMAP_ALPHA),
+      /* 0       */ Jimp.rgbaToInt(220, 50, 220, VOXMAP_ALPHA), // rgba(220,50,220,1), 
+      /* 1       */ Jimp.rgbaToInt(140, 50, 220, VOXMAP_ALPHA), // rgba(140, 50, 220, 1)
+      /* 2       */ Jimp.rgbaToInt(100, 120, 220, VOXMAP_ALPHA),// rgba(100, 120, 220, 1)
+      /* 3       */ Jimp.rgbaToInt(20, 100, 240, VOXMAP_ALPHA), // rgba(20, 100, 240, 1)
+      /* 4       */ Jimp.rgbaToInt(0, 130, 200, VOXMAP_ALPHA),  // rgba(0, 130, 200, 1)
+      /* 5       */ Jimp.rgbaToInt(0, 160, 160, VOXMAP_ALPHA),  // rgba(0, 160, 160, 1)
+      /* 6       */ Jimp.rgbaToInt(0, 200, 130, VOXMAP_ALPHA),  // rgba(0, 200, 130, 1)
+      /* 7       */ Jimp.rgbaToInt(0, 220, 70, VOXMAP_ALPHA),   // rgba(0, 220, 70, 1)
+      /* 8       */ Jimp.rgbaToInt(0, 250, 0, VOXMAP_ALPHA),    // rgba(0, 250, 0, 1)
+      /* 9       */ Jimp.rgbaToInt(50, 220, 0, VOXMAP_ALPHA),   // rgba(50, 220, 0, 1)
+      /* 10      */ Jimp.rgbaToInt(90, 190, 0, VOXMAP_ALPHA),   // rgba(90, 190, 0, 1)
+      /* 11      */ Jimp.rgbaToInt(120, 150, 0, VOXMAP_ALPHA),  // rgba(120, 150, 0, 1)
+      /* 12      */ Jimp.rgbaToInt(150, 120, 0, VOXMAP_ALPHA),  // rgba(150, 120, 0, 1)
+      /* 13      */ Jimp.rgbaToInt(190, 90, 0, VOXMAP_ALPHA),   // rgba(190, 90, 0, 1)
+      /* 14      */ Jimp.rgbaToInt(220, 50, 0, VOXMAP_ALPHA),   // rgba(220, 50, 0, 1)
+      /* 15      */ Jimp.rgbaToInt(250, 0, 0, VOXMAP_ALPHA)     // rgba(250, 0, 0, 1)
     ];
 
 
