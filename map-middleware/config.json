@@ -1,5 +1,5 @@
 {
-  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v3/map-testbed/_workingdir/",
+  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/kartat_32bit_hy/",
   "port": 8080,
   "updateInterval": 1.5
 }

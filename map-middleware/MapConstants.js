@@ -1,7 +1,17 @@
 const Jimp = require('jimp');
 
 const MAP_DIM = 256;
-const FILE_SIZE = 524288;
+const MAP_PAGE_SIZE = 8;
+
+const FILE_SIZE_OLD_MAP = 524288;
+const FILE_SIZE_NEW_MAP_32 = 336901;
+const FILE_SIZE_NEW_MAP_64 = 599045;
+const FILE_SIZES = [
+  FILE_SIZE_OLD_MAP,
+  FILE_SIZE_NEW_MAP_32,
+  FILE_SIZE_NEW_MAP_64
+];
+
 const MAP_PAGES_NUM = 10;
 
 // Map data format
@@ -32,17 +42,21 @@ const MAP_COLORS = {
   COLOR_UNIT_MAPPED_3: Jimp.cssColorToHex('#a9caa1')
 
   /*
-  COLOR_UNIT_MAPPED: Jimp.rgbaToInt(211, 233, 189, 100), //          #b4f9b7
-  COLOR_UNIT_MAPPED_1: Jimp.rgbaToInt(201, 227, 175, 100), //         #b4d6aa
-  COLOR_UNIT_MAPPED_2: Jimp.rgbaToInt(153, 202, 103, 100), //         #b3d4a9
-  COLOR_UNIT_MAPPED_3: Jimp.rgbaToInt(140, 195, 85, 100) //          #a9caa1
+  COLOR_UNIT_MAPPED: Jimp.rgbaToInt(211, 233, 189, 255), //          #b4f9b7
+  COLOR_UNIT_MAPPED_1: Jimp.rgbaToInt(201, 227, 175, 255), //         #b4d6aa
+  COLOR_UNIT_MAPPED_2: Jimp.rgbaToInt(153, 202, 103, 255), //         #b3d4a9
+  COLOR_UNIT_MAPPED_3: Jimp.rgbaToInt(140, 195, 85, 255) //          #a9caa1
   */
 };
 
 
 module.exports = {
   MAP_DIM,
-  FILE_SIZE,
+  FILE_SIZES,
+  FILE_SIZE_OLD_MAP,
+  FILE_SIZE_NEW_MAP_32,
+  FILE_SIZE_NEW_MAP_64,
+  MAP_PAGE_SIZE,
   MAP_PAGES_NUM,
   MAP_BIN,
   MAP_COLORS

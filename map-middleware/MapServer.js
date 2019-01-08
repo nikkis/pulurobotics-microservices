@@ -85,7 +85,7 @@ class MapServer {
           const stats = fs.statSync(MAP_DATA_DIR + filename);
           const fileSizeInBytes = stats.size;
 
-          if (fileSizeInBytes !== MAP_CONSTANTS.FILE_SIZE) {
+          if (!MAP_CONSTANTS.FILE_SIZES.includes(fileSizeInBytes)) {
             console.log('FILE NOT READY!', mapPageId);
             return;
           }
@@ -271,8 +271,10 @@ class MapServer {
         try {
 
           if (err) throw err;
-          const imgData = new Uint8Array(data.buffer);
-          const binaryToPng = new BinaryToPng(imgData);
+
+          //const imgData = new Int32Array(data.buffer);
+          //const imgData = new Uint8Array(data.buffer);
+          const binaryToPng = new BinaryToPng(data.buffer);
           binaryToPng.generateImageToFile(pngFileName, mapPageId, notifyCB, constraintsCB);
         } catch (error) {
           console.error(error);
