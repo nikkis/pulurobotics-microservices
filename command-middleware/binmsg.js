@@ -149,8 +149,7 @@ function decodeMessage(msgdata) {
 	message.robot_z = data.readIntBE(20, 4);
 	break;
     case TYPE_ROUTEINFO:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
+	//console.log("decoding TYPE_ROUTEINFO");
 	message.route_start_x = data.readIntBE(0, 4);
 	message.route_start_y = data.readIntBE(4, 4);
 
