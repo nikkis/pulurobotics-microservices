@@ -85,7 +85,7 @@ class MapServer {
           const stats = fs.statSync(MAP_DATA_DIR + filename);
           const fileSizeInBytes = stats.size;
 
-          if (fileSizeInBytes !== MAP_CONSTANTS.FILE_SIZE) {
+          if (!MAP_CONSTANTS.FILE_SIZES.includes(fileSizeInBytes)) {
             console.log('FILE NOT READY!', mapPageId);
             return;
           }
@@ -271,8 +271,10 @@ class MapServer {
         try {
 
           if (err) throw err;
-          const imgData = new Uint8Array(data.buffer);
-          const binaryToPng = new BinaryToPng(imgData);
+
+          //const imgData = new Int32Array(data.buffer);
+          //const imgData = new Uint8Array(data.buffer);
+          const binaryToPng = new BinaryToPng(data.buffer);
           binaryToPng.generateImageToFile(pngFileName, mapPageId, notifyCB, constraintsCB);
         } catch (error) {
           console.error(error);
@@ -297,7 +299,54 @@ class MapServer {
 
 
 
-  //// Path finder
+  //// Cleaning Path finder
+
+  /**
+   * HTTP GET to get cleaning path from the cleaning pathfinder
+   * @param startX and @param startY given as query parameters
+   */
+  getCleaningPath(req, res) {
+    try {
+      console.log('Getting cleaning path from path finder');
+      
+      let coordinates;
+      if(req.query.startX && req.query.startY) {
+        coordinates = {
+          x: parseInt(req.query.startX),
+          y: parseInt(req.query.startY)
+        };
+        console.log(coordinates);
+      } else {
+        throw 'Give both startX and startY as query parameters';
+      }
+      
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+      res.setHeader('Cache-Control', 'no-cache');
+      
+      if(this.pathFinder) {
+        
+        let cleaningPath = this.pathFinder.getPath(coordinates);
+
+        let returnData = { cleaningPath };
+  
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(returnData, null, 2));
+        return;
+
+      } else {
+        throw 'No cleaning path finder';
+      }
+      
+
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.end(`Error getting the cleaning path: ${error}.`);
+      return;
+    }
+  }
 
   /**
    * Method is called when map png image has been created
