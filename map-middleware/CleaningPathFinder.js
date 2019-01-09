@@ -3,43 +3,28 @@ const robot = require('../command-middleware/robot');
 
 class CleaningPathFinder {
 
-  constructor(testmode) {
+  constructor() {
 
     // Two-dimensional array where y-indexes are rows
     this.constraintsMap = [];
     this.firstMapPageIndex = { x: 0, y: 0 };
     this._robotSize = {
-      dx:2,
-      dy:2
+      dx:5,
+      dy:5
     };
 
     this._tmpPos = {
-      x:1,
-      y:1,
+      x:10,
+      y:10,
       angle:0
     };
 
-    if (testmode){
-      this.constraintsMap = [
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-      ];
-      this.setRobotSize(3,3);
-    }
-    else{
-
-      this.initConstraintsMapPages();
-      this.setRobotSize(robot.size_x,robot.size_y);
+    this.initConstraintsMapPages();
+    // this.setRobotSize(robot.size_x,robot.size_y);
 
       // Do any other init stuff here
     }
-  }
+  
 
   initConstraintsMapPages() {
 
@@ -66,9 +51,13 @@ class CleaningPathFinder {
 
 
   getPath(position) {
+    console.log("Initial position requested (x,y): ("+position.x+","+position.y+")");
     let coordinateList = [];
 
     this._tmpPos = position;
+    this._tmpPos.angle = 0;
+    console.log("Value of _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
+    
     let forwardStep = Math.round(this._robotSize.dx/2); // Step ahead temporary position
     let turns = 0;
 
@@ -78,6 +67,7 @@ class CleaningPathFinder {
       while (!obstacle) {
         this._tmpPos.x += Math.round(forwardStep * Math.cos(this._tmpPos.angle));
         this._tmpPos.y += Math.round(forwardStep * Math.sin(this._tmpPos.angle));
+        console.log("Before obstacle value of _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
         obstacle = this.checkObstacle();
       }
 
@@ -182,11 +172,18 @@ class CleaningPathFinder {
             (sensorObstacles[i].x * Math.sin(this._tmpPos.angle) + sensorObstacles[i].y * Math.cos(this._tmpPos.angle)));
         console.log("X :" + X);
         console.log("Y :" + Y);
+
         if(X > 0){
           if(X < this.constraintsMap.length){
             if(Y > 0){
               if(Y < this.constraintsMap[X].length){
-                frontObstacles.push(this.constraintsMap[X][Y]);
+                if(this.constraintsMap[X][Y] == null){
+                  console.log("Issue constraintsMap[X][Y] == null");
+                  return true;
+                }
+                else{
+                  frontObstacles.push(this.constraintsMap[X][Y]);
+                }
               }
               else{
                 console.log("Y too big for the size of map");
