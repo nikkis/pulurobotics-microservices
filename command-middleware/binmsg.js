@@ -199,8 +199,7 @@ function decodeMessage(msgdata) {
 	message.lidar_offset_y = data.readIntBE(6, 2);
 	break;
     case TYPE_MOVEMENT_STATUS:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
+	//console.log("decoding TYPE_MOVEMENT_STATUS");
 	
 	message.start_angle = data.readUIntBE(0, 2);
 	message.start_x = data.readIntBE(2, 4);
