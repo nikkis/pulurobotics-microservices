@@ -167,7 +167,29 @@ function decodeMessage(msgdata) {
 	// This message has no payload
 	break;
     case TYPE_INFOSTATE:
-	// This message has no payload
+	//console.log("decoding TYPE_INFOSTATE");
+	var info_state = data.readIntBE(0, 1);
+	if (info_state == -1) {
+	    message.info_state = "undefined";
+	} else if (info_state == 0) {
+	    message.info_state = "idle";
+	} else if (info_state == 1) {
+	    message.info_state = "think";
+	} else if (info_state == 2) {
+	    message.info_state = "forward";
+	} else if (info_state == 3) {
+	    message.info_state = "reverse";
+	} else if (info_state == 4) {
+	    message.info_state = "left";
+	} else if (info_state == 5) {
+	    message.info_state = "right";
+	} else if (info_state == 6) {
+	    message.info_state = "charging";
+	} else if (info_state == 7) {
+	    message.info_state = "daijuing";
+	} else {
+	    return undefined; // TODO: confirm that this is a good way to signal invalid data
+	}
 	break;
     case TYPE_ROBOTINFO:
 	// This message has no payload
