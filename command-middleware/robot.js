@@ -61,6 +61,14 @@ const robot = {
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
+	case Msg.TYPE_HW_POSE:
+	    robot.x = message.robot_x;
+	    robot.y = message.robot_y;
+	    robot.angle = message.robot_angle;
+
+	    return_message = "robot_status";
+	    payload = robot.getStatus();
+	    break;
 	case Msg.TYPE_POS:
 	    robot.x = message.robot_x;
 	    robot.y = message.robot_y;
