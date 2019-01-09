@@ -52,6 +52,15 @@ const robot = {
 	var payload = null;
 
 	switch(message.type) {
+	case Msg.TYPE_PWR_STATUS:
+	    robot.battery.charging = message.charging == 0 ? false : true;
+	    robot.battery.charge_finished = message.charge_finished == 0 ? false : true;
+	    robot.battery.voltage = message.battery_voltage;
+	    robot.battery.percentage = message.battery_percentage;
+	    robot.battery.charge_voltage = message.charge_voltage;
+	    return_message = "robot_status";
+	    payload = robot.getStatus();
+	    break;
 	case Msg.TYPE_POS:
 	    robot.x = message.robot_x;
 	    robot.y = message.robot_y;
@@ -79,6 +88,7 @@ const robot = {
 	    return_message = "sonar";
 	    break;
 	case Msg.TYPE_BATTERY:
+	    // TODO: deprecated
 	    robot.battery.charging = message.charging == 0 ? false : true;
 	    robot.battery.charge_finished = message.charge_finished == 0 ? false : true;
 	    robot.battery.voltage = message.battery_voltage;
