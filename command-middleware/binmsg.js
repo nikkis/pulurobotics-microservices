@@ -13,6 +13,7 @@ const TYPE_MANU = 59;
 const TYPE_ADDCONSTRAINT = 60;
 const TYPE_REMCONSTRAINT = 61;
 
+const TYPE_PWR_STATUS = 4;
 const TYPE_POS = 130;
 const TYPE_LIDAR_LOWRES = 131;
 const TYPE_DBG = 132;
@@ -138,6 +139,14 @@ function decodeMessage(msgdata) {
     };
 
     switch(opcode) {
+    case TYPE_PWR_STATUS:
+	//console.log("decoding TYPE_PWR_STATUS");
+	message.charging = data.readIntBE(0, 1) & 1;
+	message.charge_finished = data.readIntBE(0, 1) & 2;;
+	message.battery_percentage = data.readIntBE(1, 1);
+	message.battery_voltage = data.readIntBE(2, 2) / 1000.0;
+	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
+	break;
     case TYPE_POS:
 	//console.log("decoding TYPE_POS");
 	message.robot_angle = data.readUIntBE(0, 2) / 65536.0 * 360.0;
@@ -180,6 +189,7 @@ function decodeMessage(msgdata) {
 	message.sonar_c = data.readIntBE(9, 1);
 	break;
     case TYPE_BATTERY:
+	// TODO: deprecated
 	message.charging = data.readIntBE(0, 1) & 1;
 	message.charge_finished = data.readIntBE(0, 1) & 2;
 	message.battery_voltage = data.readIntBE(1, 2) / 1000.0;
