@@ -376,6 +376,7 @@ function decodeMessage(msgdata) {
 }
 
 module.exports = {
+    TYPE_PWR_STATUS,
     TYPE_DEST,
     TYPE_ROUTE,
     TYPE_CHARGE,
