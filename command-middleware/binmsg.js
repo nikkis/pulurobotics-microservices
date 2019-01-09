@@ -14,6 +14,7 @@ const TYPE_ADDCONSTRAINT = 60;
 const TYPE_REMCONSTRAINT = 61;
 
 const TYPE_PWR_STATUS = 4;
+const TYPE_HW_POSE = 10;
 const TYPE_POS = 130;
 const TYPE_LIDAR_LOWRES = 131;
 const TYPE_DBG = 132;
@@ -146,6 +147,15 @@ function decodeMessage(msgdata) {
 	message.battery_percentage = data.readIntBE(1, 1);
 	message.battery_voltage = data.readIntBE(2, 2) / 1000.0;
 	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
+	break;
+    case TYPE_HW_POSE:
+	//console.log("decoding TYPE_HW_POSE");
+	message.robot_angle = data.readUIntBE(0, 4) / 11930464.711111;
+	message.robot_pitch = data.readUIntBE(4, 4) / 11930464.711111;
+	message.robot_roll = data.readUIntBE(8, 4) / 11930464.711111;
+	message.robot_x = data.readIntBE(12, 4);
+	message.robot_y = data.readIntBE(16, 4);
+	message.robot_z = data.readIntBE(20, 4);
 	break;
     case TYPE_POS:
 	//console.log("decoding TYPE_POS");
@@ -377,6 +387,7 @@ function decodeMessage(msgdata) {
 
 module.exports = {
     TYPE_PWR_STATUS,
+    TYPE_HW_POSE,
     TYPE_DEST,
     TYPE_ROUTE,
     TYPE_CHARGE,
