@@ -29,6 +29,19 @@ const robot = {
 
     // private fields
     waypoints: undefined,
+    localization_2d: undefined,
+    localization_3d: undefined,
+    mapping_2d: undefined,
+    mapping_3d: undefined,
+    collision_mapping: undefined,
+    big_localization_area: undefined,
+    reserved3: undefined,
+    reserved4: undefined,
+    reserved5: undefined,
+    reserved6: undefined,
+    reserved7: undefined,
+    reserved8: undefined,
+    reserved9: undefined,
 
     // public methods
     getStatus: () => {
@@ -160,9 +173,22 @@ const robot = {
 	    }
 	    break;
 	case Msg.TYPE_STATEVECT:
+	    robot.localization_2d = message.localization_2d;
+	    robot.localization_3d = message.localization_3d;
+	    robot.mapping_2d = message.mapping_2d;
+	    robot.mapping_3d = message.mapping_3d;
+	    robot.collision_mapping = message.collision_mapping;
 	    robot.motors_on = message.motors_on;
-	    robot.vacuum_on = message.vacuum_app;
 	    robot.autononmous_exploration = message.autonomous_exploration;
+	    robot.big_localization_area = message.big_localization_area;
+	    robot.vacuum_on = message.vacuum_app;
+	    robot.reserved3 = message.reserved3;
+	    robot.reserved4 = message.reserved4;
+	    robot.reserved5 = message.reserved5;
+	    robot.reserved6 = message.reserved6;
+	    robot.reserved7 = message.reserved7;
+	    robot.reserved8 = message.reserved8;
+	    robot.reserved9 = message.reserved9;
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;

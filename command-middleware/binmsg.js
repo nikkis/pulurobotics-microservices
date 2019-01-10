@@ -5,13 +5,13 @@
 const assert = require("assert").strict;
 
 // Public constants
-const TYPE_DEST = 55;
-const TYPE_ROUTE = 56;
-const TYPE_CHARGE = 57;
-const TYPE_MODE = 58;
-const TYPE_MANU = 59;
-const TYPE_ADDCONSTRAINT = 60;
-const TYPE_REMCONSTRAINT = 61;
+const TYPE_DEST = 355;
+const TYPE_ROUTE = 356;
+const TYPE_CHARGE = 357;
+const TYPE_MODE = 358;
+const TYPE_MANU = 359;
+const TYPE_ADDCONSTRAINT = 360;
+const TYPE_REMCONSTRAINT = 361;
 
 const TYPE_VOXEL_MAP = 1;
 const TYPE_PWR_STATUS = 4;
@@ -52,9 +52,9 @@ function encodeMessage() {
 
     if (arguments.length == 1) {
 	// message without payload
-	var buffer = Buffer.alloc(3);
-	buffer.writeUIntBE(opcode, 0, 1);
-	buffer.writeUIntBE(0, 2);
+	var buffer = Buffer.alloc(5);
+	buffer.writeUIntBE(opcode, 0, 2);
+	buffer.writeUIntBE(0, 2, 3);
 	return buffer;
     }
     
@@ -85,11 +85,11 @@ function encodeMessage() {
     var buffer = Buffer.alloc(BIN_HEADER_LENGTH + data_length);
 
     // construct header
-    buffer.writeUIntBE(opcode, 0, 1);
-    buffer.writeUIntBE(data_length, 1, 2);
+    buffer.writeUIntBE(opcode, 0, 2);
+    buffer.writeUIntBE(data_length, 2, 3);
     
     // loop through the remaining arguments and encode them
-    var pos = 3; // first position to write data to
+    var pos = 5; // first position to write data to
     for (var i = 0; i < format.length; i++) {
 	var data = arguments[i+2]; // first 2 arguments already done
 
