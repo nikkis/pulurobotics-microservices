@@ -13,6 +13,7 @@ const TYPE_MANU = 59;
 const TYPE_ADDCONSTRAINT = 60;
 const TYPE_REMCONSTRAINT = 61;
 
+const TYPE_VOXEL_MAP = 1;
 const TYPE_PWR_STATUS = 4;
 const TYPE_TOF_DIAGNOSTICS = 8;
 const TYPE_HW_POSE = 10;
@@ -133,6 +134,9 @@ function decodeMessage(msgdata) {
     };
 
     switch(opcode) {
+    case TYPE_VOXEL_MAP:
+	message.running_count = data.readIntLE(0, 4);
+	break;
     case TYPE_PWR_STATUS:
 	//console.log("decoding TYPE_PWR_STATUS");
 	message.charging = data.readIntBE(0, 1) & 1;
@@ -305,6 +309,7 @@ function decodeMessage(msgdata) {
 }
 
 module.exports = {
+    TYPE_VOXEL_MAP,
     TYPE_PWR_STATUS,
     TYPE_TOF_DIAGNOSTICS,
     TYPE_HW_POSE,
