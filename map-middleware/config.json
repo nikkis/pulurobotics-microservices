@@ -3,5 +3,6 @@
   "mapPagesNum": 10,
   "port": 8080,
   "updateInterval": 1.5,
-  "autoDetect": true
+  "autoDetect": true,
+  "constraintsHeight": 1
 }
