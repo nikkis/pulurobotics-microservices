@@ -13,19 +13,12 @@ const TYPE_MANU = 59;
 const TYPE_ADDCONSTRAINT = 60;
 const TYPE_REMCONSTRAINT = 61;
 
-const TYPE_POS = 130;
-const TYPE_LIDAR_LOWRES = 131;
-const TYPE_DBG = 132;
-const TYPE_SONAR = 133;
-const TYPE_BATTERY = 134;
+const TYPE_PWR_STATUS = 4;
+const TYPE_HW_POSE = 10;
 const TYPE_ROUTEINFO = 435;
 const TYPE_SYNCREQ = 436;
-const TYPE_DBGPOINT = 137;
-const TYPE_HMAP = 138;
 const TYPE_INFOSTATE = 439;
 const TYPE_ROBOTINFO = 440;
-const TYPE_LIDAR_HIGHRES = 141;
-const TYPE_PICTURE = 142;
 const TYPE_MOVEMENT_STATUS = 443;
 const TYPE_ROUTE_STATUS = 444;
 const TYPE_STATEVECT = 145;
@@ -138,57 +131,25 @@ function decodeMessage(msgdata) {
     };
 
     switch(opcode) {
-    case TYPE_POS:
-	//console.log("decoding TYPE_POS");
-	message.robot_angle = data.readUIntBE(0, 2) / 65536.0 * 360.0;
-	message.robot_x = data.readIntBE(2, 4);
-	message.robot_y = data.readIntBE(6, 4);
-	// TODO: handle cmd_state
-	break;
-    case TYPE_LIDAR_LOWRES:
-	//console.log("decoding TYPE_LIDAR_LOWRES");
-	//console.log("message dump follows");
-	//console.log(data);
-	
-	message.robot_angle = data.readUIntBE(0, 2) / 65536.0 * 360.0;
-	message.robot_x = data.readIntBE(2, 4);
-	message.robot_y = data.readIntBE(6, 4);
-	message.lidar_points = [];
-
-	var num_points = Math.trunc((length - 10) / 2);
-
-	try {
-	    for (var i = 0; i < num_points; i++) {
-		var x = data.readIntBE(10 + 2 * i, 1) * 160 + message.robot_x;
-		var y = data.readIntBE(10 + 2 * i + 1, 1) * 160 + message.robot_y;
-		message.lidar_points.push([x, y])
-	    }
-	} catch (err) {
-	    console.warn("Error while parsing lidar lowres points");
-	    console.warn(err);
-	}
-	break;
-    case TYPE_DBG:
-	//console.log(`Opcode ${opcode} not verified.`);
-	break;
-    case TYPE_SONAR:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
-	message.sonar_x = data.readIntBE(0, 4);
-	message.sonar_y = data.readIntBE(4, 4);
-	message.sonar_z = data.readIntBE(8, 4);
-	message.sonar_c = data.readIntBE(9, 1);
-	break;
-    case TYPE_BATTERY:
+    case TYPE_PWR_STATUS:
+	//console.log("decoding TYPE_PWR_STATUS");
 	message.charging = data.readIntBE(0, 1) & 1;
-	message.charge_finished = data.readIntBE(0, 1) & 2;
-	message.battery_voltage = data.readIntBE(1, 2) / 1000.0;
-	message.battery_percentage = data.readIntBE(3, 1);
+	message.charge_finished = data.readIntBE(0, 1) & 2;;
+	message.battery_percentage = data.readIntBE(1, 1);
+	message.battery_voltage = data.readIntBE(2, 2) / 1000.0;
 	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
 	break;
+    case TYPE_HW_POSE:
+	//console.log("decoding TYPE_HW_POSE");
+	message.robot_angle = data.readUIntBE(0, 4) / 11930464.711111;
+	message.robot_pitch = data.readUIntBE(4, 4) / 11930464.711111;
+	message.robot_roll = data.readUIntBE(8, 4) / 11930464.711111;
+	message.robot_x = data.readIntBE(12, 4);
+	message.robot_y = data.readIntBE(16, 4);
+	message.robot_z = data.readIntBE(20, 4);
+	break;
     case TYPE_ROUTEINFO:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
+	//console.log("decoding TYPE_ROUTEINFO");
 	message.route_start_x = data.readIntBE(0, 4);
 	message.route_start_y = data.readIntBE(4, 4);
 
@@ -205,71 +166,40 @@ function decodeMessage(msgdata) {
     case TYPE_SYNCREQ:
 	// This message has no payload
 	break;
-    case TYPE_DBGPOINT:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
-	if (data.readIntBE(11, 1) == 0) {
-	    message.debug_point_x = data.readIntBE(0, 4);
-	    message.debug_point_y = data.readIntBE(4, 4);
-	    message.debug_point_r = data.readIntBE(8, 1);
-	    message.debug_point_g = data.readIntBE(9, 1);
-	    message.debug_point_b = data.readIntBE(10, 1);
+    case TYPE_INFOSTATE:
+	//console.log("decoding TYPE_INFOSTATE");
+	var info_state = data.readIntBE(0, 1);
+	if (info_state == -1) {
+	    message.info_state = "undefined";
+	} else if (info_state == 0) {
+	    message.info_state = "idle";
+	} else if (info_state == 1) {
+	    message.info_state = "think";
+	} else if (info_state == 2) {
+	    message.info_state = "forward";
+	} else if (info_state == 3) {
+	    message.info_state = "reverse";
+	} else if (info_state == 4) {
+	    message.info_state = "left";
+	} else if (info_state == 5) {
+	    message.info_state = "right";
+	} else if (info_state == 6) {
+	    message.info_state = "charging";
+	} else if (info_state == 7) {
+	    message.info_state = "daijuing";
 	} else {
-	    message.pers_debug_point_x = data.readIntBE(0, 4);
-	    message.pers_debug_point_y = data.readIntBE(4, 4);
-	    message.pers_debug_point_r = data.readIntBE(8, 1);
-	    message.pers_debug_point_g = data.readIntBE(9, 1);
-	    message.pers_debug_point_b = data.readIntBE(10, 1);
-	}
-	break;
-    case TYPE_HMAP:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
-	message.hmap_xsamples = data.readIntBE(0, 2);
-	message.hmap_ysamples = data.readIntBE(2, 2);
-	if (message.hmap_xsamples < 1 ||
-	    message.hmap_xsamples > 256 ||
-	    message.hmap_ysamples < 1 ||
-	    message.hmap_ysamples > 256) {
-	    message.hmap_invalid = true;
 	    return undefined; // TODO: confirm that this is a good way to signal invalid data
 	}
-	message.robot_angle = data.readUIntBE(4, 2) / 65536.0 * 360.0;
-	message.robot_x = data.readIntBE(6, 4);
-	message.robot_y = data.readIntBE(10, 4);
-	message.hmap_unit_size = data.readIntBE(14, 1);
-	message.hmap_data = Buffer.alloc(message.hmap_xsamples * message.hmap_ysamples);
-	data.copy(message.hmap_data, 0, 15);
-	break;
-    case TYPE_INFOSTATE:
-	// This message has no payload
 	break;
     case TYPE_ROBOTINFO:
-	// This message has no payload
-	break;
-    case TYPE_PICTURE:
-	//console.log(`Opcode ${opcode} not verified.`);
-	break;
-    case TYPE_LIDAR_HIGHRES:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
-
-	message.robot_angle = data.readUIntBE(0, 2) / 65536 * 360;
-	message.robot_x = data.readIntBE(2, 4);
-	message.robot_y = data.readIntBE(6, 4);
-	message.lidar_points = [];
-
-	var num_points = Math.trunc((length - 10) / 4);
-
-	for (var i = 0; i < num_points; i++) {
-	    var x = data.readIntBE(10 + 4 * i, 2) + message.robot_x;
-	    var y = data.readIntBE(10 + 4 * i + 2, 2) + message.robot_y;
-	    message.lidar_points.push([x, y])
-	}
+	console.log("decoding TYPE_ROBOTINFO");
+	message.robot_size_x = data.readIntBE(0, 2);
+	message.robot_size_y = data.readIntBE(2, 2);
+	message.lidar_offset_x = data.readIntBE(4, 2);
+	message.lidar_offset_y = data.readIntBE(6, 2);
 	break;
     case TYPE_MOVEMENT_STATUS:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
+	//console.log("decoding TYPE_MOVEMENT_STATUS");
 	
 	message.start_angle = data.readUIntBE(0, 2);
 	message.start_x = data.readIntBE(2, 4);
@@ -317,8 +247,7 @@ function decodeMessage(msgdata) {
 	message.reroute_count = data.readIntBE(29, 2);
 	break;
     case TYPE_STATEVECT:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
+	//console.log("decoding TYPE_STATEVECT");
 
 	var state_vector_fields = [
 	    {name: "localization_2d"},
@@ -329,7 +258,7 @@ function decodeMessage(msgdata) {
 	    {name: "motors_on"},
 	    {name: "autonomous_exploration"},
 	    {name: "big_localization_area"},
-	    {name: "reserved2"},
+	    {name: "vacuum_app"},
 	    {name: "reserved3"},
 	    {name: "reserved4"},
 	    {name: "reserved5"},
@@ -366,6 +295,8 @@ function decodeMessage(msgdata) {
 }
 
 module.exports = {
+    TYPE_PWR_STATUS,
+    TYPE_HW_POSE,
     TYPE_DEST,
     TYPE_ROUTE,
     TYPE_CHARGE,
@@ -373,19 +304,10 @@ module.exports = {
     TYPE_MANU,
     TYPE_ADDCONSTRAINT,
     TYPE_REMCONSTRAINT,
-    TYPE_POS,
-    TYPE_LIDAR_LOWRES,
-    TYPE_DBG,
-    TYPE_SONAR,
-    TYPE_BATTERY,
     TYPE_ROUTEINFO,
     TYPE_SYNCREQ,
-    TYPE_DBGPOINT,
-    TYPE_HMAP,
     TYPE_INFOSTATE,
     TYPE_ROBOTINFO,
-    TYPE_LIDAR_HIGHRES,
-    TYPE_PICTURE,
     TYPE_MOVEMENT_STATUS,
     TYPE_ROUTE_STATUS,
     TYPE_STATEVECT,

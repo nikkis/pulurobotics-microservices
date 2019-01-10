@@ -13,6 +13,7 @@ const robot = {
     angle: null,
     status: null,
     motors_on: null,
+    vacuum_on: null,
     autonomous_exploration: null,
     battery: {
 	charging: null,
@@ -39,6 +40,7 @@ const robot = {
 	    angle: robot.angle,
 	    status: robot.status,
 	    motors_on: robot.motors_on,
+	    vacuum_on: robot.vacuum_on,
 	    autonomous_exploration: robot.autonomous_exploration,
 	    battery: robot.battery,
 	    lidar: robot.lidar,
@@ -52,38 +54,20 @@ const robot = {
 	var payload = null;
 
 	switch(message.type) {
-	case Msg.TYPE_POS:
-	    robot.x = message.robot_x;
-	    robot.y = message.robot_y;
-	    robot.angle = message.robot_angle;
-
-	    return_message = "robot_status";
-	    payload = robot.getStatus();
-	    break;
-	case Msg.TYPE_LIDAR_LOWRES:
-	    robot.x = message.robot_x;
-	    robot.y = message.robot_y;
-	    robot.angle = message.robot_angle;
-
-	    if (message.lidar_points.length > 0) {
-		// TODO: handle lidar points
-	    }
-
-	    return_message = "lidar_lowres";
-	    payload = robot.getStatus();
-	    break;
-	case Msg.TYPE_DBG:
-	    return_message = "debug";
-	    break;
-	case Msg.TYPE_SONAR:
-	    return_message = "sonar";
-	    break;
-	case Msg.TYPE_BATTERY:
+	case Msg.TYPE_PWR_STATUS:
 	    robot.battery.charging = message.charging == 0 ? false : true;
 	    robot.battery.charge_finished = message.charge_finished == 0 ? false : true;
 	    robot.battery.voltage = message.battery_voltage;
 	    robot.battery.percentage = message.battery_percentage;
 	    robot.battery.charge_voltage = message.charge_voltage;
+	    return_message = "robot_status";
+	    payload = robot.getStatus();
+	    break;
+	case Msg.TYPE_HW_POSE:
+	    robot.x = message.robot_x;
+	    robot.y = message.robot_y;
+	    robot.angle = message.robot_angle;
+
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
@@ -100,16 +84,6 @@ const robot = {
 	case Msg.TYPE_SYNCREQ:
 	    return_message = "sync_request";
 	    break;
-	case Msg.TYPE_DBGPOINT:
-	    return_message = "dbgpoint";
-	    break;
-	case Msg.TYPE_HMAP:
-	    robot.angle = message.robot_angle;
-	    robot.x = message.robot_x;
-	    robot.y = message.robot_y;
-	    return_message = "robot_status";
-	    payload = robot.getStatus();
-	    break;
 	case Msg.TYPE_INFOSTATE:
 	    robot.status = message.info_state;
 	    return_message = "robot_status";
@@ -122,12 +96,6 @@ const robot = {
 	    robot.lidar.offset_y = message.lidar_offset_y;
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
-	    break;
-	case Msg.LIDAR_HIGHRES:
-	    return_message = "lidar_highres";
-	    break;
-	case Msg.TYPE_PICTURE:
-	    return_message = "picture";
 	    break;
 	case Msg.TYPE_MOVEMENT_STATUS:
 	    return_message = "movement_status";
@@ -184,6 +152,7 @@ const robot = {
 	    break;
 	case Msg.STATEVECT:
 	    robot.motors_on = message.motors_on;
+	    robot.vacuum_on = message.vacuum_app;
 	    robot.autononmous_exploration = message.autonomous_exploration;
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
