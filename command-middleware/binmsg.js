@@ -258,7 +258,7 @@ function decodeMessage(msgdata) {
 	    {name: "motors_on"},
 	    {name: "autonomous_exploration"},
 	    {name: "big_localization_area"},
-	    {name: "reserved2"},
+	    {name: "vacuum_app"},
 	    {name: "reserved3"},
 	    {name: "reserved4"},
 	    {name: "reserved5"},
