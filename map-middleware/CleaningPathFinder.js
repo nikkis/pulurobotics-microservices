@@ -252,6 +252,7 @@ class CleaningPathFinder {
           this.constraintsMap[y][x] = mapPageConstraints[mapPageY][mapPageX];
           mapPageX++;
         }
+        mapPageX = 0;
         mapPageY++;
       }
 

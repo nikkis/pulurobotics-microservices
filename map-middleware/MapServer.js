@@ -20,6 +20,13 @@ class MapServer {
 
   constructor(io) {
 
+    // If Config.autoDetect: true, MapServer will automatically 
+    // detect map format and update some of these UI init data
+    this.initDataForClient = {
+      mapDataFormat: MAP_CONSTANTS.MAP_FORMATS[MAP_CONSTANTS.MAP_DEFAULT_FORMAT],
+      numOfMapPages: MAP_CONSTANTS.MAP_PAGE_SIZE
+    };
+    
     this.io = io;
 
     this.filePath = Config.mapDataFilePath;
@@ -86,8 +93,12 @@ class MapServer {
           const fileSizeInBytes = stats.size;
 
           if (!MAP_CONSTANTS.FILE_SIZES.includes(fileSizeInBytes)) {
-            console.log('FILE NOT READY!', mapPageId);
+            console.log('INVALID MAP FILE (wrong size):', mapPageId);
             return;
+          }
+
+          if(Config.autoDetect) {
+            this.initDataForClient.mapDataFormat = MAP_CONSTANTS.MAP_FORMATS[fileSizeInBytes];
           }
 
           that.currentMapFiles[filename] = that.getPngFromBinaryFile(filename, mapPageId);
@@ -164,7 +175,10 @@ class MapServer {
           mapPages.push(this.mapPageData(mapPageId));
         }
 
-        let returnData = { mapPages };
+        let returnData = { 
+          initData: this.initDataForClient,
+          mapPages 
+        };
         res.end(JSON.stringify(returnData, null, 2));
         return;
       });
