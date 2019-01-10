@@ -5,13 +5,13 @@
 const assert = require("assert").strict;
 
 // Public constants
-const TYPE_DEST = 55;
-const TYPE_ROUTE = 56;
-const TYPE_CHARGE = 57;
-const TYPE_MODE = 58;
-const TYPE_MANU = 59;
-const TYPE_ADDCONSTRAINT = 60;
-const TYPE_REMCONSTRAINT = 61;
+const TYPE_DEST = 355;
+const TYPE_ROUTE = 356;
+const TYPE_CHARGE = 357;
+const TYPE_MODE = 358;
+const TYPE_MANU = 359;
+const TYPE_ADDCONSTRAINT = 360;
+const TYPE_REMCONSTRAINT = 361;
 
 const TYPE_VOXEL_MAP = 1;
 const TYPE_PWR_STATUS = 4;
