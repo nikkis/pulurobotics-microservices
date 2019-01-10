@@ -140,13 +140,13 @@ function decodeMessage(msgdata) {
 	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
 	break;
     case TYPE_HW_POSE:
-	//console.log("decoding TYPE_HW_POSE");
-	message.robot_angle = data.readUIntBE(0, 4) / 11930464.711111;
-	message.robot_pitch = data.readUIntBE(4, 4) / 11930464.711111;
-	message.robot_roll = data.readUIntBE(8, 4) / 11930464.711111;
-	message.robot_x = data.readIntBE(12, 4);
-	message.robot_y = data.readIntBE(16, 4);
-	message.robot_z = data.readIntBE(20, 4);
+	console.log("decoding TYPE_HW_POSE");
+	message.robot_angle = data.readUIntLE(0, 4) / 11930464.711111;
+	message.robot_pitch = data.readUIntLE(4, 4) / 11930464.711111;
+	message.robot_roll = data.readUIntLE(8, 4) / 11930464.711111;
+	message.robot_x = data.readIntLE(12, 4);
+	message.robot_y = data.readIntLE(16, 4);
+	message.robot_z = data.readIntLE(20, 4);
 	break;
     case TYPE_ROUTEINFO:
 	//console.log("decoding TYPE_ROUTEINFO");
