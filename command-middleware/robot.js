@@ -63,6 +63,9 @@ const robot = {
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
+	case Msg.TYPE_TOF_DIAGNOSTICS:
+	    // TODO: implement if needed
+	    break;
 	case Msg.TYPE_HW_POSE:
 	    robot.x = message.robot_x;
 	    robot.y = message.robot_y;
