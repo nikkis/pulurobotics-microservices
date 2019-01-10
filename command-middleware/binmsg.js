@@ -89,7 +89,7 @@ function encodeMessage() {
     buffer.writeUIntBE(data_length, 1, 3);
     
     // loop through the remaining arguments and encode them
-    var pos = 3; // first position to write data to
+    var pos = 5; // first position to write data to
     for (var i = 0; i < format.length; i++) {
 	var data = arguments[i+2]; // first 2 arguments already done
 
