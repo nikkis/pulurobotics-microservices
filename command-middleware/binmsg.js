@@ -140,7 +140,7 @@ function decodeMessage(msgdata) {
 	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
 	break;
     case TYPE_HW_POSE:
-	console.log("decoding TYPE_HW_POSE");
+	//console.log("decoding TYPE_HW_POSE");
 	message.robot_angle = data.readUIntLE(0, 4) / 11930464.711111;
 	message.robot_pitch = data.readUIntLE(4, 4) / 11930464.711111;
 	message.robot_roll = data.readUIntLE(8, 4) / 11930464.711111;
