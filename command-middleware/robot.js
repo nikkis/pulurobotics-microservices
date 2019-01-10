@@ -74,6 +74,9 @@ const robot = {
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
+	case Msg.TYPE_DRIVE_DIAGNOSTICS:
+	    // TODO: implement if needed
+	    break;
 	case Msg.TYPE_ROUTEINFO:
 	    return_message = "routeinfo";
 	    payload = {
