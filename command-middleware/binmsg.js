@@ -16,6 +16,7 @@ const TYPE_REMCONSTRAINT = 61;
 const TYPE_PWR_STATUS = 4;
 const TYPE_TOF_DIAGNOSTICS = 8;
 const TYPE_HW_POSE = 10;
+const TYPE_DRIVE_DIAGNOSTICS = 11;
 const TYPE_ROUTEINFO = 435;
 const TYPE_SYNCREQ = 436;
 const TYPE_INFOSTATE = 439;
@@ -144,6 +145,9 @@ function decodeMessage(msgdata) {
 	//console.log("decoding TYPE_TOF_DIAGNOSTICS");
 	message.sensor_index = data.readUIntLE(0, 1);
 	message.temperature = data.readUIntLE(0, 2);
+	break;
+    case TYPE_DRIVE_DIAGNOSTICS:
+	message.remaining_distance = data.readUIntLE(28, 4);
 	break;
     case TYPE_HW_POSE:
 	//console.log("decoding TYPE_HW_POSE");
@@ -304,6 +308,7 @@ module.exports = {
     TYPE_PWR_STATUS,
     TYPE_TOF_DIAGNOSTICS,
     TYPE_HW_POSE,
+    TYPE_DRIVE_DIAGNOSTICS,
     TYPE_DEST,
     TYPE_ROUTE,
     TYPE_CHARGE,
