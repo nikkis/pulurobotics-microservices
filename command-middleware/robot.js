@@ -54,6 +54,9 @@ const robot = {
 	var payload = null;
 
 	switch(message.type) {
+	case Msg.TYPE_VOXEL_MAP:
+	    // TODO: implement if needed
+	    break;
 	case Msg.TYPE_PWR_STATUS:
 	    robot.battery.charging = message.charging == 0 ? false : true;
 	    robot.battery.charge_finished = message.charge_finished == 0 ? false : true;
