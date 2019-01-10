@@ -14,6 +14,7 @@ const TYPE_ADDCONSTRAINT = 60;
 const TYPE_REMCONSTRAINT = 61;
 
 const TYPE_PWR_STATUS = 4;
+const TYPE_TOF_DIAGNOSTICS = 8;
 const TYPE_HW_POSE = 10;
 const TYPE_ROUTEINFO = 435;
 const TYPE_SYNCREQ = 436;
@@ -138,6 +139,11 @@ function decodeMessage(msgdata) {
 	message.battery_percentage = data.readIntBE(1, 1);
 	message.battery_voltage = data.readIntBE(2, 2) / 1000.0;
 	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
+	break;
+    case TYPE_TOF_DIAGNOSTICS:
+	//console.log("decoding TYPE_TOF_DIAGNOSTICS");
+	message.sensor_index = data.readUIntLE(0, 1);
+	message.temperature = data.readUIntLE(0, 2);
 	break;
     case TYPE_HW_POSE:
 	//console.log("decoding TYPE_HW_POSE");
@@ -296,6 +302,7 @@ function decodeMessage(msgdata) {
 
 module.exports = {
     TYPE_PWR_STATUS,
+    TYPE_TOF_DIAGNOSTICS,
     TYPE_HW_POSE,
     TYPE_DEST,
     TYPE_ROUTE,
