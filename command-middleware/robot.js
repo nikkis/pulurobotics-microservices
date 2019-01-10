@@ -13,6 +13,7 @@ const robot = {
     angle: null,
     status: null,
     motors_on: null,
+    vacuum_on: null,
     autonomous_exploration: null,
     battery: {
 	charging: null,
@@ -39,6 +40,7 @@ const robot = {
 	    angle: robot.angle,
 	    status: robot.status,
 	    motors_on: robot.motors_on,
+	    vacuum_on: robot.vacuum_on,
 	    autonomous_exploration: robot.autonomous_exploration,
 	    battery: robot.battery,
 	    lidar: robot.lidar,
@@ -150,6 +152,7 @@ const robot = {
 	    break;
 	case Msg.STATEVECT:
 	    robot.motors_on = message.motors_on;
+	    robot.vacuum_on = message.vacuum_app;
 	    robot.autononmous_exploration = message.autonomous_exploration;
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
