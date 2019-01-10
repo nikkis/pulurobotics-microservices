@@ -247,8 +247,8 @@ for (let i = 0; i < tempImgPixels.length; i++) {
 
         if (err) throw err;
 
-        //that.imageData.forEach((row, y) => {
-        that.constraintsImageData.forEach((row, y) => {
+        that.imageData.forEach((row, y) => {
+        //that.constraintsImageData.forEach((row, y) => {
           row.forEach((color, x) => {
             image.setPixelColor(color, x, y);
           });
