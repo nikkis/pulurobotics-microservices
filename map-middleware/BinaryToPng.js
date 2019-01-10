@@ -78,8 +78,8 @@ class BinaryToPng {
 
     this.color1 = Jimp.cssColorToHex('#000000');
     this.color0 = Jimp.cssColorToHex('#f4f067');
-
-    this.voxmapBlankColor = Jimp.rgbaToInt(0, 0, 0, 50);
+    
+    this.voxmapBlankColor = Jimp.cssColorToHex('#bebebe'); //Jimp.rgbaToInt(0, 0, 0, 50);
     this.forbiddenColor = Jimp.rgbaToInt(255, 190, 190, VOXMAP_ALPHA);
 
   }
@@ -242,12 +242,15 @@ for (let i = 0; i < tempImgPixels.length; i++) {
   writePngFile(src, data, mapPageId, notifyCB=null) {
     console.log('Writing img', mapPageId);
     const that = this;
-    new Jimp(MAP_CONSTANTS.MAP_DIM, MAP_CONSTANTS.MAP_DIM, function (err, image) {
+
+    new Jimp(MAP_CONSTANTS.MAP_DIM, MAP_CONSTANTS.MAP_DIM, 0xFFFFFFFF, function (err, image) {
       try {
         if (err) throw err;
+        
         data.forEach((row, y) => {
           row.forEach((color, x) => {
-            image.setPixelColor(color, x, y);
+            image
+            .setPixelColor(color, x, y);
           });
         });
 
