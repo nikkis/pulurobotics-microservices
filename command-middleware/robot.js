@@ -159,14 +159,14 @@ const robot = {
 		robot.socket.write(cmd);
 	    }
 	    break;
-	case Msg.STATEVECT:
+	case Msg.TYPE_STATEVECT:
 	    robot.motors_on = message.motors_on;
 	    robot.vacuum_on = message.vacuum_app;
 	    robot.autononmous_exploration = message.autonomous_exploration;
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
-	case Msg.LOCALIZATION_RESULT:
+	case Msg.TYPE_LOCALIZATION_RESULT:
 	    return_message = "localization_result";
 	    break;
 	default:
