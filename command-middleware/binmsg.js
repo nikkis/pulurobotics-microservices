@@ -247,8 +247,7 @@ function decodeMessage(msgdata) {
 	message.reroute_count = data.readIntBE(29, 2);
 	break;
     case TYPE_STATEVECT:
-	// TODO: check
-	//console.log(`Opcode ${opcode} not verified.`);
+	//console.log("decoding TYPE_STATEVECT");
 
 	var state_vector_fields = [
 	    {name: "localization_2d"},
