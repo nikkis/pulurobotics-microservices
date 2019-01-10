@@ -47,7 +47,7 @@ const Jimp = require('jimp');
 
 const MAP_CONSTANTS = require('./MapConstants');
 
-const constraintsHeight = 3;
+const constraintsHeight = 4;
 
 class BinaryToPng {
   constructor(binary) {
@@ -58,7 +58,7 @@ class BinaryToPng {
     const VOXMAP_ALPHA = 255;
 
     this.colors = [
-      /* 0       */ Jimp.rgbaToInt(220, 50, 220, VOXMAP_ALPHA), // rgba(220,50,220,1), 
+      /* 0       */ Jimp.rgbaToInt(220, 50, 220, VOXMAP_ALPHA), // rgba(220,50,220, 1), 
       /* 1       */ Jimp.rgbaToInt(140, 50, 220, VOXMAP_ALPHA), // rgba(140, 50, 220, 1)
       /* 2       */ Jimp.rgbaToInt(100, 120, 220, VOXMAP_ALPHA),// rgba(100, 120, 220, 1)
       /* 3       */ Jimp.rgbaToInt(20, 100, 240, VOXMAP_ALPHA), // rgba(20, 100, 240, 1)
@@ -76,6 +76,8 @@ class BinaryToPng {
       /* 15      */ Jimp.rgbaToInt(250, 0, 0, VOXMAP_ALPHA)     // rgba(250, 0, 0, 1)
     ];
 
+    this.color1 = Jimp.cssColorToHex('#000000');
+    this.color0 = Jimp.cssColorToHex('#f4f067');
 
     this.voxmapBlankColor = Jimp.rgbaToInt(0, 0, 0, 50);
     this.forbiddenColor = Jimp.rgbaToInt(255, 190, 190, VOXMAP_ALPHA);
@@ -88,9 +90,11 @@ class BinaryToPng {
 
       ////// Constraints
       let mapPageConstraints = new Array(MAP_CONSTANTS.MAP_DIM);
-      for (let i = 0; i < mapPageConstraints.length; ++i) {
+      /*for (let i = 0; i < mapPageConstraints.length; ++i) {
         mapPageConstraints[i] = new Array(MAP_CONSTANTS.MAP_DIM);
-      }
+      }*/
+      mapPageConstraints = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
+      this.constraintsImageData = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
       //////
 
       this.imageData = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
@@ -106,17 +110,30 @@ class BinaryToPng {
       const int32Array = Int32Array.from(uint8Array);
 
       // Check if 64 bit map data or 32 map data
-      let K = 4; //int32Array.length === MAP_CONSTANTS.FILE_SIZE_NEW_MAP_64 ? 8 : 4;
+      let K = int32Array.length === MAP_CONSTANTS.FILE_SIZE_NEW_MAP_64 ? 8 : 4;
 
       const baseLevel = int32Array[0];
       console.log('baseLevel', baseLevel);
 
-      const voxelData = uint8Array.slice(4, 4 + K * MAP_CONSTANTS.MAP_DIM * MAP_CONSTANTS.MAP_DIM);
+      let posStart = 4;
+      let posEnd = posStart + K * MAP_CONSTANTS.MAP_DIM * MAP_CONSTANTS.MAP_DIM; // (8 bits or) 4 bits * 256 * 256
+      const voxelData = uint8Array.slice(posStart, posEnd);
       console.log('voxelData', voxelData.length);
 
-      const metadata = uint8Array.slice(voxelData.length, voxelData.length + 32);
+      posStart = posEnd;
+      posEnd = posStart + 4 * 128 * 128; // 32 bits * 128 * 128
+      const metadata = uint8Array.slice(posStart, posEnd);
       console.log('metadata', metadata.length);
 
+      posStart = posEnd;
+      posEnd = posStart + 1; // 8 bits
+      const routingValid = uint8Array.slice(posStart, posEnd);
+      console.log('routingValid', routingValid.length);
+
+      posStart = posEnd;
+      posEnd = posStart + 4 * MAP_CONSTANTS.MAP_DIM * (MAP_CONSTANTS.MAP_DIM / 32 + 1); // 32 bits * 256 * 256
+      const routing = uint8Array.slice(posStart, posEnd);
+      console.log('routing', routing.length);
 
       let i = 0, y = 0, x = 0;
       for (i = 0; i < voxelData.length; i += K) {
@@ -129,6 +146,7 @@ class BinaryToPng {
 
         /////// Constraints
         mapPageConstraints[y][x] = 0;
+        this.constraintsImageData[y][x] = this.color0;
         /////// Constraints
 
         this.imageData[y][x] = this.voxmapBlankColor;
@@ -139,8 +157,10 @@ class BinaryToPng {
             this.imageData[y][x] = this.colors[slice];
 
             /////// Constraints
-            if(slice > constraintsHeight)
+            if (slice > constraintsHeight) {
               mapPageConstraints[y][x] = 1;
+              this.constraintsImageData[y][x] = this.color1;
+            }
             /////// Constraints
           }
         }
@@ -152,8 +172,10 @@ class BinaryToPng {
             this.imageData[y][x] = this.colors[8 + slice];
 
             /////// Constraints
-            if(slice > constraintsHeight)
+            if (8 + slice > constraintsHeight) {
               mapPageConstraints[y][x] = 1;
+              this.constraintsImageData[y][x] = this.color1;
+            }
             /////// Constraints
           }
         }
@@ -225,7 +247,8 @@ for (let i = 0; i < tempImgPixels.length; i++) {
 
         if (err) throw err;
 
-        that.imageData.forEach((row, y) => {
+        //that.imageData.forEach((row, y) => {
+        that.constraintsImageData.forEach((row, y) => {
           row.forEach((color, x) => {
             image.setPixelColor(color, x, y);
           });
