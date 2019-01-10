@@ -86,7 +86,7 @@ function encodeMessage() {
 
     // construct header
     buffer.writeUIntBE(opcode, 0, 2);
-    buffer.writeUIntBE(data_length, 1, 3);
+    buffer.writeUIntBE(data_length, 2, 3);
     
     // loop through the remaining arguments and encode them
     var pos = 5; // first position to write data to
