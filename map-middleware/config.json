@@ -4,5 +4,5 @@
   "port": 8080,
   "updateInterval": 1.5,
   "autoDetect": true,
-  "constraintsHeight": 2
+  "constraintsHeight": 3
 }

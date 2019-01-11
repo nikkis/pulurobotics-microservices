@@ -78,7 +78,7 @@ class BinaryToPng {
 
     this.color1 = Jimp.cssColorToHex('#000000');
     this.color0 = Jimp.cssColorToHex('#f4f067');
-    
+
     this.voxmapBlankColor = Jimp.cssColorToHex('#bebebe'); //Jimp.rgbaToInt(0, 0, 0, 50);
     this.forbiddenColor = Jimp.rgbaToInt(255, 190, 190, VOXMAP_ALPHA);
 
@@ -135,6 +135,7 @@ class BinaryToPng {
       const routing = uint8Array.slice(posStart, posEnd);
       console.log('routing', routing.length);
 
+      const newVoxelData = [];
       let i = 0, y = 0, x = 0;
       for (i = 0; i < voxelData.length; i += K) {
 
@@ -149,9 +150,9 @@ class BinaryToPng {
         this.constraintsImageData[y][x] = this.color0;
         /////// Constraints
 
-        this.imageData[y][x] = this.voxmapBlankColor;
+        //this.imageData[y][x] = this.voxmapBlankColor;
         aByte = voxelData[i];
-        byteStr = aByte.toString(2);
+        /*byteStr = aByte.toString(2);
         for (let slice = 0; slice < byteStr.length; slice++) {
           if (aByte & (1 << slice)) {
             this.imageData[y][x] = this.colors[slice];
@@ -163,14 +164,14 @@ class BinaryToPng {
             }
             /////// Constraints
           }
-        }
+        }*/
 
         bByte = voxelData[i + 1];
+        /*
         byteStr = bByte.toString(2);
         for (let slice = 0; slice < byteStr.length; slice++) {
           if (bByte & (1 << slice)) {
             this.imageData[y][x] = this.colors[8 + slice];
-
             /////// Constraints
             if (8 + slice > constraintsHeight) {
               mapPageConstraints[y][x] = 1;
@@ -178,50 +179,113 @@ class BinaryToPng {
             }
             /////// Constraints
           }
-        }
+        }*/
+
+        newVoxelData.push({ aByte, bByte });
 
         x++;
       }
 
 
-      /*
-let xx = 0;
-let K = 0;
-const cur_slice = 8;
-const MAP_PAGE_W = MAP_CONSTANTS.MAP_DIM;
-let tempImgPixels = new Array(MAP_PAGE_W * MAP_PAGE_W);
-for (let x = 0; x < MAP_PAGE_W; x++) {
-  for (let y = 0; y < MAP_PAGE_W; y++) {
-    if (false) { //page -> meta[(y / 2) * (MAP_PAGE_W / 2) + (x / 2)].constraints & CONSTRAINT_FORBIDDEN) {
-      //pixels[(MAP_PAGE_W - 1 - y) * MAP_PAGE_W + x] = this.forbiddenColor;
-    }
-    else {
-      const val = voxelData[y * MAP_PAGE_W + xx];
-      tempImgPixels[(MAP_PAGE_W - 1 - y) * MAP_PAGE_W + x] = this.voxmapBlankColor;
-      for (let slice = 0; slice < cur_slice; slice++) {
-        if (val & (1 << slice))
-          tempImgPixels[(MAP_PAGE_W - 1 - y) * MAP_PAGE_W + x] = this.colors1[slice];
+
+      
+      
+      const cur_slice = 8;
+      const MAP_PAGE_W = MAP_CONSTANTS.MAP_DIM;
+      let tempImgPixels = new Array(MAP_PAGE_W * MAP_PAGE_W);
+      let tempImgPixels2 = new Array(MAP_PAGE_W * MAP_PAGE_W);
+      let mapPageConstraintsTemp = new Array(MAP_PAGE_W * MAP_PAGE_W);
+      for (let xInd = 0; xInd < MAP_PAGE_W; xInd++) {
+        for (let yInd = 0; yInd < MAP_PAGE_W; yInd++) {
+
+                  /////// Constraints
+        mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 0;
+        tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color0;
+        /////// Constraints
+
+          if (false) { //page -> meta[(y / 2) * (MAP_PAGE_W / 2) + (x / 2)].constraints & CONSTRAINT_FORBIDDEN) {
+            //pixels[(MAP_PAGE_W - 1 - y) * MAP_PAGE_W + x] = this.forbiddenColor;
+          }
+          else {
+
+            const val = newVoxelData[yInd * MAP_PAGE_W + xInd];
+            tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.voxmapBlankColor;
+            tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color0;
+
+            for (let slice = 0; slice < val.aByte.toString(2).length; slice++) {
+            //for (let slice = 0; slice < cur_slice; slice++) {
+              if (val.aByte & (1 << slice))
+                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.colors[slice];
+                if (slice > constraintsHeight) {
+
+                  console.log('slice', slice, 'constraintsHeight', constraintsHeight);
+
+                  mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 1;
+                  tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color1;
+                }
+            }
+            for (let slice = 0; slice < val.bByte.toString(2).length; slice++) {
+            //for (let slice = 0; slice < cur_slice; slice++) {
+              if (val.bByte & (1 << slice))
+                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.colors[8+slice];
+                if (8+slice > constraintsHeight) {
+                  mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 1;
+                  tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color1;
+                }
+            }
+
+            /*
+            for (let slice = 0; slice < val.aByte.toString(2).length; slice++) {
+              if (val.aByte & (1 << slice)) {
+                this.imageData[y][x] = this.colors[slice];
+                /////// Constraints
+                if (slice > constraintsHeight) {
+                  mapPageConstraints[y][x] = 1;
+                  this.constraintsImageData[y][x] = this.color1;
+                }
+                /////// Constraints
+              }
+            }
+
+            for (let slice = 0; slice < val.bByte.toString(2).length; slice++) {
+              if (val.bByte & (1 << slice)) {
+                this.imageData[y][x] = this.colors[8 + slice];
+                /////// Constraints
+                if (8 + slice > constraintsHeight) {
+                  mapPageConstraints[y][x] = 1;
+                  this.constraintsImageData[y][x] = this.color1;
+                }
+                /////// Constraints
+              }
+            }*/
+
+
+          }
+          
+        }
       }
-    }
-    xx += 4;
-  }
-}
 
-let y = 0, x = 0;
-for (let i = 0; i < tempImgPixels.length; i++) {
-  // Check for rows
-  if (x === MAP_CONSTANTS.MAP_DIM) {
-    x = 0;
-    ++y;
-  }
-  this.imageData[y][x] = tempImgPixels[i];
-  ++x;
-}*/
+      const newImageData = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
+      const newImageData2 = [...Array(MAP_CONSTANTS.MAP_DIM)].map(x => Array(MAP_CONSTANTS.MAP_DIM).fill(0));
+
+      let yy = 0, xx = 0;
+      for (let i = 0; i < tempImgPixels.length; i++) {
+        // Check for rows
+        if (xx === MAP_CONSTANTS.MAP_DIM) {
+          xx = 0;
+          ++yy;
+        }
+        mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
+        newImageData[yy][xx] = tempImgPixels[i];
+        newImageData2[yy][xx] = tempImgPixels2[i];
+        ++xx;
+      }
 
 
 
-      this.writePngFile(src, this.imageData, mapPageId, notifyCB);
-      this.writePngFile(src2, this.constraintsImageData, mapPageId);
+      this.writePngFile(src, newImageData, mapPageId, notifyCB);
+      this.writePngFile(src2, newImageData2, mapPageId);
+      //this.writePngFile(src2, this.constraintsImageData, mapPageId);
 
       ////// Constraints
       if (constraintsCB) {
@@ -239,24 +303,24 @@ for (let i = 0; i < tempImgPixels.length; i++) {
   }
 
 
-  writePngFile(src, data, mapPageId, notifyCB=null) {
+  writePngFile(src, data, mapPageId, notifyCB = null) {
     console.log('Writing img', mapPageId);
     const that = this;
 
     new Jimp(MAP_CONSTANTS.MAP_DIM, MAP_CONSTANTS.MAP_DIM, 0xFFFFFFFF, function (err, image) {
       try {
         if (err) throw err;
-        
+
         data.forEach((row, y) => {
           row.forEach((color, x) => {
             image
-            .setPixelColor(color, x, y);
+              .setPixelColor(color, x, y);
           });
         });
 
         image.write(src, (err) => {
           if (err) throw err;
-          
+
           if (notifyCB) {
             notifyCB(mapPageId);
           }
