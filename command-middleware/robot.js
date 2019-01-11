@@ -169,6 +169,8 @@ const robot = {
 		console.debug("Proceeding to next waypoint:", waypoint);
 		const cmd = Msg.encodeMessage(Msg.TYPE_ROUTE, "iiB", waypoint.x, waypoint.y, 0);
 		robot.socket.write(cmd);
+	    } else {
+		console.debug("No more waypoints left");
 	    }
 	    break;
 	case Msg.TYPE_STATEVECT:
