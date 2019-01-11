@@ -121,3 +121,4 @@ In the messages described above, the following payload objects are used:
  * statuscode (integer): A status code describing the movement.
  * success (boolean): Whether the movement succeeded or not.
  * reroute_count (integer): How many times the route was changed on the way.
+ * waypoints_left (boolean): Whether there are still points left to visit on the set route.
