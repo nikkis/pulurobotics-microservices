@@ -248,7 +248,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("set_vacuum", (mode) => {
-	console.log("Received set_vacuum message, ", mode);
+	console.log("Received set_vacuum message:", mode);
 	arg1 = robot.localization_2d ? 1 : 0;
 	arg2 = robot.localization_3d ? 1 : 0;
 	arg3 = robot.mapping_2d ? 1 : 0;
@@ -265,7 +265,7 @@ io.on("connection", (socket) => {
 	arg14 = robot.reserved7 ? 1 : 0;
 	arg15 = robot.reserved8 ? 1 : 0;
 	arg16 = robot.reserved9 ? 1 : 0;
-	var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT_SET, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "set_vacuum"});
     });
