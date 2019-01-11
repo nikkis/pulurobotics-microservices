@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const MAP_FILE_PNG_EXTENSION = '.png';
+const MAP_FILE_CONSTRAINTS_EXTENSION = '.constraints.png';
 const MAP_FILE_EXTENSION = '.map';
 const MAP_PNG_DIR = 'images/';
 const MAP_DATA_DIR = 'data/';
@@ -261,7 +262,8 @@ class MapServer {
   mapPageData(mapPageId) {
     return {
       mapPageId: mapPageId,
-      resource: 'images/' + mapPageId + '.png',
+      resource: 'images/' + mapPageId + MAP_FILE_EXTENSION + MAP_FILE_PNG_EXTENSION,
+      resource2: 'images/' + mapPageId + MAP_FILE_EXTENSION + MAP_FILE_CONSTRAINTS_EXTENSION,
       timestamp: Date.now()
     };
   }
@@ -270,6 +272,7 @@ class MapServer {
     try {
 
       const pngFileName = MAP_PNG_DIR + fileName + MAP_FILE_PNG_EXTENSION;
+      const pngFileName2 = MAP_PNG_DIR + fileName + MAP_FILE_CONSTRAINTS_EXTENSION;
       //const fullPath = Config.mapDataFilePath + fileName;
       const fullPath = MAP_DATA_DIR + fileName;
 
@@ -286,10 +289,8 @@ class MapServer {
 
           if (err) throw err;
 
-          //const imgData = new Int32Array(data.buffer);
-          //const imgData = new Uint8Array(data.buffer);
           const binaryToPng = new BinaryToPng(data.buffer);
-          binaryToPng.generateImageToFile(pngFileName, mapPageId, notifyCB, constraintsCB);
+          binaryToPng.generateImageToFile(pngFileName, pngFileName2, mapPageId, notifyCB, constraintsCB);
         } catch (error) {
           console.error(error);
         }
@@ -303,7 +304,7 @@ class MapServer {
   }
 
   getFilenameFromPageID(mapPageID) {
-    return mapPageID + MAP_FILE_EXTENSION + MAP_FILE_PNG_EXTENSION;
+    return mapPageID + MAP_FILE_PNG_EXTENSION;
   }
 
   getPageIDFromFilename(filename) {

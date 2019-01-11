@@ -41,13 +41,13 @@ typedef struct  __attribute__ ((packed))
 } map_page_t;
 
 */
-
+const Config = require('./config.json');
 
 const Jimp = require('jimp');
 
 const MAP_CONSTANTS = require('./MapConstants');
 
-const constraintsHeight = 4;
+const constraintsHeight = Config.constraintsHeight;
 
 class BinaryToPng {
   constructor(binary) {
@@ -78,13 +78,13 @@ class BinaryToPng {
 
     this.color1 = Jimp.cssColorToHex('#000000');
     this.color0 = Jimp.cssColorToHex('#f4f067');
-
-    this.voxmapBlankColor = Jimp.rgbaToInt(0, 0, 0, 50);
+    
+    this.voxmapBlankColor = Jimp.cssColorToHex('#bebebe'); //Jimp.rgbaToInt(0, 0, 0, 50);
     this.forbiddenColor = Jimp.rgbaToInt(255, 190, 190, VOXMAP_ALPHA);
 
   }
 
-  generateImageToFile(src, mapPageId, notifyCB, constraintsCB = null) {
+  generateImageToFile(src, src2, mapPageId, notifyCB, constraintsCB = null) {
 
     try {
 
@@ -220,7 +220,8 @@ for (let i = 0; i < tempImgPixels.length; i++) {
 
 
 
-      this.writePngFile(src, mapPageId, notifyCB);
+      this.writePngFile(src, this.imageData, mapPageId, notifyCB);
+      this.writePngFile(src2, this.constraintsImageData, mapPageId);
 
       ////// Constraints
       if (constraintsCB) {
@@ -237,26 +238,25 @@ for (let i = 0; i < tempImgPixels.length; i++) {
     }
   }
 
-  writePngFile(src, mapPageId, notifyCB) {
 
+  writePngFile(src, data, mapPageId, notifyCB=null) {
     console.log('Writing img', mapPageId);
-
     const that = this;
-    let image = new Jimp(MAP_CONSTANTS.MAP_DIM, MAP_CONSTANTS.MAP_DIM, function (err, image) {
+
+    new Jimp(MAP_CONSTANTS.MAP_DIM, MAP_CONSTANTS.MAP_DIM, 0xFFFFFFFF, function (err, image) {
       try {
-
         if (err) throw err;
-
-        //that.imageData.forEach((row, y) => {
-        that.constraintsImageData.forEach((row, y) => {
+        
+        data.forEach((row, y) => {
           row.forEach((color, x) => {
-            image.setPixelColor(color, x, y);
+            image
+            .setPixelColor(color, x, y);
           });
         });
 
         image.write(src, (err) => {
           if (err) throw err;
-          console.log('Finished!');
+          
           if (notifyCB) {
             notifyCB(mapPageId);
           }
@@ -265,61 +265,13 @@ for (let i = 0; i < tempImgPixels.length; i++) {
       } catch (error) {
         console.error(error);
       }
-
     });
   }
 
 
-
-  getColorForCoordinate(binary, numVisited = null) {
-
-    if (binary.length === 1 && binary === '0')
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_FREE;
-
-    let elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_ITEM
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_ITEM;
-
-    elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_WALL
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_WALL;
-
-    elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_INVISIBLE_WALL
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_INVISIBLE_WALL;
-
-    elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_3D_WALL
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_3D_WALL;
-
-    elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_DROP
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_DROP;
-
-    elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_DBG
-    if ((binary & elemetMask) === elemetMask)
-      return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_DBG;
-
-
-    elemetMask = MAP_CONSTANTS.MAP_BIN.UNIT_MAPPED
-    if ((binary & elemetMask) === elemetMask) {
-      if (numVisited && numVisited >= 3) {
-        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED_3;
-      } else if (numVisited && numVisited === 2) {
-        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED_2;
-      } else if (numVisited && numVisited === 1) {
-        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED_1;
-      } else {
-        return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_MAPPED;
-      }
-    }
-
-
-    //console.log('Should no be the case');
-    return MAP_CONSTANTS.MAP_COLORS.COLOR_UNIT_FREE;
-
-  }
 };
+
+
 
 
 

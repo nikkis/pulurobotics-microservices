@@ -1,7 +1,8 @@
 {
-  "mapDataFilePath": "/Users/cfrancoi/pulu-maps/20190109/",
+  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/miksi/",
   "mapPagesNum": 10,
   "port": 8080,
   "updateInterval": 1.5,
-  "autoDetect": true
+  "autoDetect": true,
+  "constraintsHeight": 2
 }
