@@ -124,6 +124,7 @@ robotSocket.on("close", () => {
     setTimeout(() => {
 	console.log("Reconnecting to robot.");
 	robotSocket.connect({host: Config.robotHost, port: Config.robotPort});
+	reconnect_timeout = 5000;
     }, reconnect_timeout);
 
     reconnect_timeout *= 2;
