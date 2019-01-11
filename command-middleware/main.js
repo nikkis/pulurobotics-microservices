@@ -27,6 +27,7 @@ robotSocket.on("connect", () => {
 
 robotSocket.on("ready", () => {
     console.log("Robot client socket is ready.");
+    reconnect_timeout = 5000;
 });
 
 const WANT_OPCODE1 = 0;
@@ -124,7 +125,6 @@ robotSocket.on("close", () => {
     setTimeout(() => {
 	console.log("Reconnecting to robot.");
 	robotSocket.connect({host: Config.robotHost, port: Config.robotPort});
-	reconnect_timeout = 5000;
     }, reconnect_timeout);
 
     reconnect_timeout *= 2;
