@@ -187,12 +187,12 @@ io.on("connection", (socket) => {
 	console.log(`Received go_straight message, x: ${point.x}, y: ${point.y}, mode: ${mode}`);
 	var direction;
 	if (mode == "forward") {
-	    direction = 0;
-	} else if (mode == "backward") {
 	    direction = 1;
+	} else if (mode == "backward") {
+	    direction = 0;
 	} else {
 	    // unknown mode, go forward
-	    direction = 0;
+	    direction = 1;
 	}
 	var cmd = Msg.encodeMessage(Msg.TYPE_DEST, "iiB", point.x, point.y, direction);
 	console.log("Sending command to robot:");
