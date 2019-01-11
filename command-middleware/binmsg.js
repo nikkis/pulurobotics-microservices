@@ -139,11 +139,11 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_PWR_STATUS:
 	//console.log("decoding TYPE_PWR_STATUS");
-	message.charging = data.readIntBE(0, 1) & 1;
-	message.charge_finished = data.readIntBE(0, 1) & 2;;
-	message.battery_percentage = data.readIntBE(1, 1);
-	message.battery_voltage = data.readIntBE(2, 2) / 1000.0;
-	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
+	message.charging = data.readIntLE(0, 1) & 1;
+	message.charge_finished = data.readIntLE(0, 1) & 2;
+	message.battery_percentage = data.readIntLE(1, 1);
+	message.battery_voltage = data.readIntLE(2, 2) / 1000.0;
+	message.charge_voltage = data.readIntLE(4, 2) / 1000.0;
 	break;
     case TYPE_TOF_DIAGNOSTICS:
 	//console.log("decoding TYPE_TOF_DIAGNOSTICS");
