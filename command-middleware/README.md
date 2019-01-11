@@ -35,6 +35,8 @@ Each message results in a `command_received` message being sent from the middlew
    * point: {x, y} – x and y must be integers. The unit is mm.
  * remove_obstacle(point): Remove an obstacle at point.
    * point: {x, y} – x and y must be integers. The unit is mm.
+ * set_vacuum(mode): Turn on or off vacuum cleaner. Also lowers nozzle when vacuum is turned on and raises when it is turned off.
+   * mode – boolean.
 
 Payload objects
 ---------------
