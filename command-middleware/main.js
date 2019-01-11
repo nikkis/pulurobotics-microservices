@@ -8,26 +8,34 @@ const Msg = require("./binmsg.js");
 const robot = require("./robot.js");
 const Config = require("./config.json");
 
-/* Initialize robot client and SocketIO server */
+/* Middleware status object */
+middleware_status = {
+    robot_connection_active: false,
+    connected_clients: 0,
+}
 
-console.log(`Connecting to robot on ${Config.robotHost}:${Config.robotPort}`);
-let robotSocket = net.createConnection(
-    {host: Config.robotHost, port: Config.robotPort},
-    () => {
-	console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
-    });
+/* Initialize robot client connection */
+
+let robotSocket = net.Socket();
 robot.socket = robotSocket;
 
-console.log(`Starting Socket.io server on port ${Config.socketIOPort}`);
+/* Initialize Socket.IO server */
+
 const app = require("express")();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
-server.listen(Config.socketIOPort);
 
 /* Events for robot client socket */
 
+robotSocket.on("connect", () => {
+    console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
+});
+
 robotSocket.on("ready", () => {
     console.log("Robot client socket is ready.");
+    reconnect_timeout = 5000;
+    middleware_status.robot_connection_active = true;
+    io.sockets.emit("middleware_status", middleware_status);
 });
 
 const WANT_OPCODE1 = 0;
@@ -118,19 +126,31 @@ robotSocket.on("end", () => {
     console.log("Robot is closing the connection.");
 });
 
+reconnect_timeout = 5000;
 robotSocket.on("close", () => {
-    console.log("Robot client socket is closed.");
+    console.log(`Robot client socket is closed, waiting ${reconnect_timeout/1000} s to reconnect.`);
+    middleware_status.robot_connection_active = false;
+    io.sockets.emit("middleware_status", middleware_status);
 
     setTimeout(() => {
 	console.log("Reconnecting to robot.");
-	robotSocket = net.createConnection(
-	    {host: Config.robotHost, port: Config.robotPort},
-	    () => {
-		console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
-	    });
-	robot.socket = robotSocket;
-    }, 5000);
+	robotSocket.connect({host: Config.robotHost, port: Config.robotPort});
+    }, reconnect_timeout);
+
+    reconnect_timeout *= 2;
+    if (reconnect_timeout > 300000) {
+	reconnect_timeout = 300000;
+    }
 });
+
+robotSocket.on("error", () => {
+    console.log("Robot client socket connection error.");
+});
+
+/* Start client connection to robot */
+
+console.log(`Connecting to robot on ${Config.robotHost}:${Config.robotPort}`);
+robotSocket.connect({host: Config.robotHost, port: Config.robotPort});
 
 /* Events for SocketIO server */
 
@@ -140,11 +160,15 @@ io.on("connection", (socket) => {
     console.log(`SocketIO client id ${socket.id} connected.`);
 
     clientConnectionPool[socket.id] = socket;
+    middleware_status.connected_clients += 1;
 
     io.sockets.emit("robot_status", robot.getStatus());
+    io.sockets.emit("middleware_status", middleware_status);
 
     socket.on("disconnect", () => {
 	console.log(`SocketIO client id ${socket.id} disconnected.`);
+	middleware_status.connected_clients -= 1;
+	io.sockets.emit("middleware_status", middleware_status);
     });
 
     socket.on("error", (error) => {
@@ -154,7 +178,23 @@ io.on("connection", (socket) => {
 
     socket.on("start_mapping", () => {
 	console.log("Received start_mapping message");
-	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 3);
+	arg1 = robot.localization_2d ? 1 : 0;
+	arg2 = robot.localization_3d ? 1 : 0;
+	arg3 = robot.mapping_2d ? 1 : 0;
+	arg4 = robot.mapping_3d ? 1 : 0;
+	arg5 = robot.collision_mapping ? 1 : 0;
+	arg6 = robot.motors_on ? 1 : 0;
+	arg7 = 1;
+	arg8 = robot.big_localization_area ? 1: 0;
+	arg9 = robot.vacuum_on ? 1 : 0;
+	arg10 = robot.reserved3 ? 1 : 0;
+	arg11 = robot.reserved4 ? 1 : 0;
+	arg12 = robot.reserved5 ? 1 : 0;
+	arg13 = robot.reserved6 ? 1 : 0;
+	arg14 = robot.reserved7 ? 1 : 0;
+	arg15 = robot.reserved8 ? 1 : 0;
+	arg16 = robot.reserved9 ? 1 : 0;
+	var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT_SET, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "start_mapping"});
     });
@@ -163,12 +203,12 @@ io.on("connection", (socket) => {
 	console.log(`Received go_straight message, x: ${point.x}, y: ${point.y}, mode: ${mode}`);
 	var direction;
 	if (mode == "forward") {
-	    direction = 0;
-	} else if (mode == "backward") {
 	    direction = 1;
+	} else if (mode == "backward") {
+	    direction = 0;
 	} else {
 	    // unknown mode, go forward
-	    direction = 0;
+	    direction = 1;
 	}
 	var cmd = Msg.encodeMessage(Msg.TYPE_DEST, "iiB", point.x, point.y, direction);
 	console.log("Sending command to robot:");
@@ -224,7 +264,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("set_vacuum", (mode) => {
-	console.log("Received set_vacuum message, ", mode);
+	console.log("Received set_vacuum message:", mode);
 	arg1 = robot.localization_2d ? 1 : 0;
 	arg2 = robot.localization_3d ? 1 : 0;
 	arg3 = robot.mapping_2d ? 1 : 0;
@@ -241,8 +281,13 @@ io.on("connection", (socket) => {
 	arg14 = robot.reserved7 ? 1 : 0;
 	arg15 = robot.reserved8 ? 1 : 0;
 	arg16 = robot.reserved9 ? 1 : 0;
-	var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT_SET, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "set_vacuum"});
     });
 });
+
+/* Start Socket.io server */
+
+console.log(`Starting Socket.io server on port ${Config.socketIOPort}`);
+server.listen(Config.socketIOPort);

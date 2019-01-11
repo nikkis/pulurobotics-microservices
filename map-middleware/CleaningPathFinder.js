@@ -23,7 +23,7 @@ class CleaningPathFinder {
     this.setRobotSize();
     console.log("Robot size is: " + this._robotSize.dx +", "+ this._robotSize.dy);
     if(this._robotSize.dx == null) {
-      this._robotSize.dx=50;
+      this._robotSize.dx=16;
     }
 
       // Do any other init stuff here
@@ -56,9 +56,56 @@ class CleaningPathFinder {
 
   getPath(position) {
     console.log("Initial position requested (x,y): ("+position.x+","+position.y+")");
+    let initPosition = {
+      x:position.x,
+      y:position.y
+    };
+    if(position.x > this.constraintsMap.length){
+      console.log('Initial position x out of range');
+      initPosition.x = 1280;
+      console.log('Position x recentered:');
+    }
+    else{
+      if(position.y>this.constraintsMap[position.x].length){
+        console.log('Initial position y out of range');
+        initPosition.y = 1280;
+        console.log('Position y recentered: '+initPosition.y);
+      }
+    }
     let coordinateList = [];
 
-    // Replacing all undefined area with obstacles
+    this._tmpPos = initPosition;
+
+    this._tmpPos.angle = 0;
+
+    // Checking how x and y grow
+    /*
+    console.log("First _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
+    let firstCoord = {
+      x:this._tmpPos.x,
+      y:this._tmpPos.y
+    };
+    coordinateList.push(firstCoord);
+
+    this._tmpPos.x+=256;
+    console.log("Second _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
+    let second = {
+      x:this._tmpPos.x,
+      y:this._tmpPos.y
+    };
+    coordinateList.push(second);
+
+    this._tmpPos.y+=256;
+    console.log("Third _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
+    let third = {
+      x:this._tmpPos.x,
+      y:this._tmpPos.y
+    };
+    coordinateList.push(third);
+    */
+
+        // Replacing all undefined area with obstacles
+    /*
     for(let i=0; i<this.constraintsMap.length; i++){
       for(let j=0;j<this.constraintsMap[i].length;j++){
         if (this.constraintsMap[i][j] == null){
@@ -66,17 +113,40 @@ class CleaningPathFinder {
         }
       }
     }
+    */
 
-    this._tmpPos = position;
-    this._tmpPos.angle = 0;
-    // console.log("Value of _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
+    /* Test: Print map number of 0s in each row, position of first 0 in each row
+    let zerosTogether=0;
+    for(let i=0; i<this.constraintsMap.length; i++){
+      let zeroFound = false;
+      for(let j=0; j<this.constraintsMap[i].length; j++){
+        if (zeroFound == false){
+          if (this.constraintsMap[i][j]==0){
+            zeroFound = true;
+            zerosTogether++;
+            console.log('Zeros from ('+i+','+j+')');
+          }
+        }
+        else{
+          if(this.constraintsMap[i][j]==0){
+            zerosTogether++;
+          }
+          else{
+            console.log('Number of zeros together: '+ zerosTogether);
+            zerosTogether=0;
+            zeroFound = false;
+          }
+        }
+      }
+    }
+    */
     
     console.log('Value of _robotSize.dx = '+this._robotSize.dx);
-    let forwardStep = Math.round(this._robotSize.dx/2); // Step ahead temporary position
+    let forwardStep = Math.round(this._robotSize.dx); // Step ahead temporary position
     let turns = 0;
 
     let obstacle = false;
-
+    
     while (1) {
       while (!obstacle) {
         this._tmpPos.x += Math.round(forwardStep * Math.cos(this._tmpPos.angle));
@@ -148,7 +218,7 @@ class CleaningPathFinder {
       sensorSize++;
     }
 
-    let X = Math.round(sensorSize/2); // Same as forwardStep
+    let X = Math.round(sensorSize); // Same as forwardStep
     let Y = - Math.round(sensorSize/2);
     for (var i = 0; i<(sensorSize+1); i++){
       let y = Y+i;
@@ -185,7 +255,7 @@ class CleaningPathFinder {
     // Find obstacles in front of robot: X_robot position + r*cos(alpha) +
     // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
     let frontObstacles = [];
-    for (var i=0; i<sensorObstacles.length; i++){
+    for (let i=0; i<sensorObstacles.length; i++){
         let X = Math.round(this._tmpPos.x + 
             (sensorObstacles[i].x * Math.cos(this._tmpPos.angle) - sensorObstacles[i].y * Math.sin(this._tmpPos.angle)));
         let Y = Math.round(this._tmpPos.y + 
@@ -195,43 +265,46 @@ class CleaningPathFinder {
         // console.log("X :" + X);
         // console.log("Y :" + Y);
 
-        if(X > 0){
-          if(X < this.constraintsMap.length){
-            if(Y > 0){
-              if(Y < this.constraintsMap[X].length){
-                if(this.constraintsMap[X][Y] == null){
-                  console.log("Issue constraintsMap[X][Y] == null");
-                  return true;
+        if(Y > 0){
+          if(Y < this.constraintsMap.length){
+            if(X > 0){
+              if(X < this.constraintsMap[Y].length){
+                if(this.constraintsMap[Y][X] == null){
+                  console.log('Issue constraintsMap['+Y+']['+X+'] == null');
+                  frontObstacles.push(1);
                 }
                 else{
-                  frontObstacles.push(this.constraintsMap[X][Y]);
+                  frontObstacles.push(this.constraintsMap[Y][X]);
                 }
               }
               else{
-                console.log("Y too big for the size of map");
+                console.log("X too big for the size of map");
                 frontObstacles.push(1);
               }
             }
             else{
-              console.log("Y < 0, too small for index in map");
+              console.log("X < 0, too small for index in map");
               frontObstacles.push(1);
             }
           }
           else{
-            console.log("X too big for the size of map");
+            console.log("Y too big for the size of map");
             frontObstacles.push(1);
           }
         }
         else{
-          console.log("X < 0, too small for index in map");
+          console.log("Y < 0, too small for index in map");
           frontObstacles.push(1);
         }
     }
 
+    console.log('Size of frontObstacles '+frontObstacles.length);
+    console.log('_tmpPos = ('+this._tmpPos.x+','+this._tmpPos.y+', angle= '+this._tmpPos.angle+')');
+
     // Test: checking the size of the array in front of _tmpPos
     // console.log("Size of frontObstacles " + frontObstacles.length);
     if(frontObstacles.length == 0){
-      console.log("Error: sensor array empty");
+      console.log("Error: frontObstacles empty");
       return true;
     }
 
@@ -245,11 +318,14 @@ class CleaningPathFinder {
         // console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
     }
 
-    console.log('Number of obstacles in front of _tmpPos: '+count);
-    if (count == frontObstacles.length){
+    if (count > 0){//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
       obstacle = true;
     }
 
+    if(obstacle == true){
+      console.log('Number of obstacles in front of _tmpPos: '+count);
+      console.log('Obstacle found in front of coordinate: ('+this._tmpPos.x+','+this._tmpPos.y+')');
+    }
     return obstacle;
     
   }

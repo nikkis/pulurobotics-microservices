@@ -12,6 +12,7 @@ const TYPE_MODE = 358;
 const TYPE_MANU = 359;
 const TYPE_ADDCONSTRAINT = 360;
 const TYPE_REMCONSTRAINT = 361;
+const TYPE_STATEVECT_SET = 364;
 
 const TYPE_VOXEL_MAP = 1;
 const TYPE_PWR_STATUS = 4;
@@ -139,11 +140,11 @@ function decodeMessage(msgdata) {
 	break;
     case TYPE_PWR_STATUS:
 	//console.log("decoding TYPE_PWR_STATUS");
-	message.charging = data.readIntBE(0, 1) & 1;
-	message.charge_finished = data.readIntBE(0, 1) & 2;;
-	message.battery_percentage = data.readIntBE(1, 1);
-	message.battery_voltage = data.readIntBE(2, 2) / 1000.0;
-	message.charge_voltage = data.readIntBE(4, 2) / 1000.0;
+	message.charging = data.readIntLE(0, 1) & 1;
+	message.charge_finished = data.readIntLE(0, 1) & 2;
+	message.battery_percentage = data.readIntLE(1, 1);
+	message.battery_voltage = data.readIntLE(2, 2) / 1000.0;
+	message.charge_voltage = data.readIntLE(4, 2) / 1000.0;
 	break;
     case TYPE_TOF_DIAGNOSTICS:
 	//console.log("decoding TYPE_TOF_DIAGNOSTICS");
@@ -206,7 +207,7 @@ function decodeMessage(msgdata) {
 	}
 	break;
     case TYPE_ROBOTINFO:
-	console.log("decoding TYPE_ROBOTINFO");
+	//console.log("decoding TYPE_ROBOTINFO");
 	message.robot_size_x = data.readIntBE(0, 2);
 	message.robot_size_y = data.readIntBE(2, 2);
 	message.robot_origin_x = data.readIntBE(4, 2);
@@ -321,6 +322,7 @@ module.exports = {
     TYPE_MANU,
     TYPE_ADDCONSTRAINT,
     TYPE_REMCONSTRAINT,
+    TYPE_STATEVECT_SET,
     TYPE_ROUTEINFO,
     TYPE_SYNCREQ,
     TYPE_INFOSTATE,

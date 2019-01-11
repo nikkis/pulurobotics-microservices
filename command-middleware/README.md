@@ -9,6 +9,7 @@ SocketIO messages sent *from* the middleware
 The middleware sends the following commands with the specified payload. The payload objects are described in more detail below.
 
  * robot_status: Payload: a robot status object.
+ * middleware_status: Payload: a middleware status object.
  * routeinfo: Payload: A route info object.
  * movement_status: Describes the result of a straight movement operation. Payload: a straight movement status object.
  * route_status: Describes the result of a routing movement operation. Payload: a routing movement status object.
@@ -34,6 +35,8 @@ Each message results in a `command_received` message being sent from the middlew
    * point: {x, y} – x and y must be integers. The unit is mm.
  * remove_obstacle(point): Remove an obstacle at point.
    * point: {x, y} – x and y must be integers. The unit is mm.
+ * set_vacuum(mode): Turn on or off vacuum cleaner. Also lowers nozzle when vacuum is turned on and raises when it is turned off.
+   * mode – boolean.
 
 Payload objects
 ---------------
@@ -69,6 +72,11 @@ In the messages described above, the following payload objects are used:
  * lidar (object): An object representing data from the robot's lidar sensor.
    * offset_x (integer): Not documented.
    * offset_y (integer): Not documented.
+
+### Middleware status object
+
+ * robot_connection_active (boolean): True if the connection to the robot is active, false otherwise.
+ * connected_clients (integer): The number of clients that are connected to the middleware.
 
 ### Route info object
 

@@ -13,7 +13,7 @@ const robot = {
     origin_x: null,
     origin_y: null,
     angle: null,
-    status: null,
+    status: "idle",
     motors_on: null,
     vacuum_on: null,
     autonomous_exploration: null,
