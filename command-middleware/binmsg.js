@@ -209,8 +209,8 @@ function decodeMessage(msgdata) {
 	console.log("decoding TYPE_ROBOTINFO");
 	message.robot_size_x = data.readIntBE(0, 2);
 	message.robot_size_y = data.readIntBE(2, 2);
-	message.lidar_offset_x = data.readIntBE(4, 2);
-	message.lidar_offset_y = data.readIntBE(6, 2);
+	message.robot_origin_x = data.readIntBE(4, 2);
+	message.robot_origin_y = data.readIntBE(6, 2);
 	break;
     case TYPE_MOVEMENT_STATUS:
 	//console.log("decoding TYPE_MOVEMENT_STATUS");

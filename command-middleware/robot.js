@@ -10,6 +10,8 @@ const robot = {
     y: null,
     size_x: null,
     size_y: null,
+    origin_x: null,
+    origin_y: null,
     angle: null,
     status: null,
     motors_on: null,
@@ -21,10 +23,6 @@ const robot = {
 	voltage: null,
 	percentage: null,
 	charge_voltage: null,
-    },
-    lidar: {
-	offset_x: null,
-	offset_y: null,
     },
 
     // private fields
@@ -50,13 +48,14 @@ const robot = {
 	    y: robot.y,
 	    size_x: robot.size_x,
 	    size_y: robot.size_y,
+	    origin_x: robot.origin_x,
+	    origin_y: robot.origin_y,
 	    angle: robot.angle,
 	    status: robot.status,
 	    motors_on: robot.motors_on,
 	    vacuum_on: robot.vacuum_on,
 	    autonomous_exploration: robot.autonomous_exploration,
 	    battery: robot.battery,
-	    lidar: robot.lidar,
 	};
     },
     
@@ -114,8 +113,8 @@ const robot = {
 	case Msg.TYPE_ROBOTINFO:
 	    robot.size_x = message.robot_size_x;
 	    robot.size_y = message.robot_size_y;
-	    robot.lidar.offset_x = message.lidar_offset_x;
-	    robot.lidar.offset_y = message.lidar_offset_y;
+	    robot.origin_x = message.robot_origin_x;
+	    robot.origin_y = message.robot_origin_y;
 	    return_message = "robot_status";
 	    payload = robot.getStatus();
 	    break;
