@@ -9,12 +9,6 @@ SocketIO messages sent *from* the middleware
 The middleware sends the following commands with the specified payload. The payload objects are described in more detail below.
 
  * robot_status: Payload: a robot status object.
- * lidar_lowres: Payload: a robot status object. (TODO: This should be changed to contain lidar data.)
- * lidar_highres: Not documented. Payload: Empty.
- * picture: Not documented. Payload: Empty.
- * debug: Not documented. Payload: Empty.
- * dbgpoint: Not documented. Payload: Empty.
- * sonar: Not documented. Payload: Empty.
  * routeinfo: Payload: A route info object.
  * movement_status: Describes the result of a straight movement operation. Payload: a straight movement status object.
  * route_status: Describes the result of a routing movement operation. Payload: a routing movement status object.
@@ -52,6 +46,8 @@ In the messages described above, the following payload objects are used:
  * y (integer): Robot's current y-coordinate in mm. The origin is determined by the location at start-up.
  * size_x (integer): Robot's x-size in mm.
  * size_y (integer): Robot's y-size in mm.
+ * origin_x (integer): Robot's x-origin (center of rotation) in mm.
+ * origin_y (integer): Robot's y-origin (center of rotation) in mm.
  * angle (integer): Robot's angle in degrees. The starting angle is determined at start-up.
  * status (string): A string describing the current processing state of the robot. Possible values:
    * "idle" – The robot is idle.
