@@ -8,23 +8,22 @@ const Msg = require("./binmsg.js");
 const robot = require("./robot.js");
 const Config = require("./config.json");
 
-/* Initialize robot client and SocketIO server */
+/* Initialize robot client connection */
 
-console.log(`Connecting to robot on ${Config.robotHost}:${Config.robotPort}`);
-let robotSocket = net.createConnection(
-    {host: Config.robotHost, port: Config.robotPort},
-    () => {
-	console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
-    });
+let robotSocket = net.Socket();
 robot.socket = robotSocket;
 
-console.log(`Starting Socket.io server on port ${Config.socketIOPort}`);
+/* Initialize Socket.IO server */
+
 const app = require("express")();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
-server.listen(Config.socketIOPort);
 
 /* Events for robot client socket */
+
+robotSocket.on("connect", () => {
+    console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
+});
 
 robotSocket.on("ready", () => {
     console.log("Robot client socket is ready.");
@@ -118,19 +117,29 @@ robotSocket.on("end", () => {
     console.log("Robot is closing the connection.");
 });
 
+reconnect_timeout = 5000;
 robotSocket.on("close", () => {
-    console.log("Robot client socket is closed.");
+    console.log(`Robot client socket is closed, waiting ${reconnect_timeout/1000} s to reconnect.`);
 
     setTimeout(() => {
 	console.log("Reconnecting to robot.");
-	robotSocket = net.createConnection(
-	    {host: Config.robotHost, port: Config.robotPort},
-	    () => {
-		console.log(`Connected to robot on ${Config.robotHost}:${Config.robotPort}`);
-	    });
-	robot.socket = robotSocket;
-    }, 5000);
+	robotSocket.connect({host: Config.robotHost, port: Config.robotPort});
+    }, reconnect_timeout);
+
+    reconnect_timeout *= 2;
+    if (reconnect_timeout > 300000) {
+	reconnect_timeout = 300000;
+    }
 });
+
+robotSocket.on("error", () => {
+    console.log("Robot client socket connection error.");
+});
+
+/* Start client connection to robot */
+
+console.log(`Connecting to robot on ${Config.robotHost}:${Config.robotPort}`);
+robotSocket.connect({host: Config.robotHost, port: Config.robotPort});
 
 /* Events for SocketIO server */
 
@@ -246,3 +255,8 @@ io.on("connection", (socket) => {
 	io.sockets.emit("command_received", {command: "set_vacuum"});
     });
 });
+
+/* Start Socket.io server */
+
+console.log(`Starting Socket.io server on port ${Config.socketIOPort}`);
+server.listen(Config.socketIOPort);
