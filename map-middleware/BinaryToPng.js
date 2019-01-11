@@ -49,6 +49,8 @@ const MAP_CONSTANTS = require('./MapConstants');
 
 const constraintsHeight = Config.constraintsHeight;
 
+const CONSTRAINT_FORBIDDEN = (1 << 0);
+
 class BinaryToPng {
   constructor(binary) {
     this.data = binary;
@@ -81,6 +83,7 @@ class BinaryToPng {
 
     this.voxmapBlankColor = Jimp.cssColorToHex('#bebebe'); //Jimp.rgbaToInt(0, 0, 0, 50);
     this.forbiddenColor = Jimp.rgbaToInt(255, 190, 190, VOXMAP_ALPHA);
+    this.visitedColor = Jimp.rgbaToInt(255, 255, 255, VOXMAP_ALPHA);
 
   }
 
@@ -136,6 +139,7 @@ class BinaryToPng {
       console.log('routing', routing.length);
 
       const newVoxelData = [];
+      const newMetadata = [];
       let i = 0, y = 0, x = 0;
       for (i = 0; i < voxelData.length; i += K) {
 
@@ -145,49 +149,25 @@ class BinaryToPng {
           ++y;
         }
 
-        /////// Constraints
-        mapPageConstraints[y][x] = 0;
-        this.constraintsImageData[y][x] = this.color0;
-        /////// Constraints
 
-        //this.imageData[y][x] = this.voxmapBlankColor;
         aByte = voxelData[i];
-        /*byteStr = aByte.toString(2);
-        for (let slice = 0; slice < byteStr.length; slice++) {
-          if (aByte & (1 << slice)) {
-            this.imageData[y][x] = this.colors[slice];
-
-            /////// Constraints
-            if (slice > constraintsHeight) {
-              mapPageConstraints[y][x] = 1;
-              this.constraintsImageData[y][x] = this.color1;
-            }
-            /////// Constraints
-          }
-        }*/
-
         bByte = voxelData[i + 1];
-        /*
-        byteStr = bByte.toString(2);
-        for (let slice = 0; slice < byteStr.length; slice++) {
-          if (bByte & (1 << slice)) {
-            this.imageData[y][x] = this.colors[8 + slice];
-            /////// Constraints
-            if (8 + slice > constraintsHeight) {
-              mapPageConstraints[y][x] = 1;
-              this.constraintsImageData[y][x] = this.color1;
-            }
-            /////// Constraints
-          }
-        }*/
-
         newVoxelData.push({ aByte, bByte });
 
         x++;
       }
 
 
+      for (let i2 = 0; i2 < metadata.length; i2 += 4) {
+        newMetadata.push({
+          timestamp: metadata[i2],
+          constraints: metadata[i2 + 1],
+          numVisited: metadata[i2 + 2],
+          reserved: metadata[i2 + 3]
+        });
+      }
 
+      console.log('newMetadata', newMetadata.length);
 
 
       const cur_slice = 8;
@@ -233,27 +213,17 @@ class BinaryToPng {
             }
 
             /*
-            for (let slice = 0; slice < val.aByte.toString(2).length; slice++) {
-              if (val.aByte & (1 << slice)) {
-                this.imageData[y][x] = this.colors[slice];
-                /////// Constraints
-                if (slice > constraintsHeight) {
-                  mapPageConstraints[y][x] = 1;
-                  this.constraintsImageData[y][x] = this.color1;
-                }
-                /////// Constraints
+            if ((((yInd & 1) && (xInd & 1)))) {
+              if (newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)] &&
+                newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)].constraints & CONSTRAINT_FORBIDDEN) {
+                console.log('JUUUUU UU ------------------------ ---- - ');
+                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
               }
-            }
 
-            for (let slice = 0; slice < val.bByte.toString(2).length; slice++) {
-              if (val.bByte & (1 << slice)) {
-                this.imageData[y][x] = this.colors[8 + slice];
-                /////// Constraints
-                if (8 + slice > constraintsHeight) {
-                  mapPageConstraints[y][x] = 1;
-                  this.constraintsImageData[y][x] = this.color1;
-                }
-                /////// Constraints
+              if (newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)] &&
+                newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)].numVisited > 0) {
+                  console.log('JUUUUU UU 2 ------------------------ ---- - ');
+                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
               }
             }*/
 
@@ -273,13 +243,24 @@ class BinaryToPng {
           xx = 0;
           ++yy;
         }
-        mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
+        //mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
         newImageData[yy][xx] = tempImgPixels[i];
         newImageData2[yy][xx] = tempImgPixels2[i];
         ++xx;
       }
 
-
+      yy = MAP_CONSTANTS.MAP_DIM - 1, xx = MAP_CONSTANTS.MAP_DIM - 1;
+      for (let i = mapPageConstraintsTemp.length - 1; i >= 0; --i) {
+        // Check for rows
+        if (xx === 0) {
+          xx = MAP_CONSTANTS.MAP_DIM - 1;
+          --yy;
+        }
+        if(yy > 0) {
+          mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
+          --xx;
+        }
+      }
 
       this.writePngFile(src, newImageData, mapPageId, notifyCB);
       this.writePngFile(src2, newImageData2, mapPageId);

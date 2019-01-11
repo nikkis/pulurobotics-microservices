@@ -1,5 +1,5 @@
 {
-  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/miksi/",
+  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/constraints/",
   "mapPagesNum": 10,
   "port": 8080,
   "updateInterval": 1.5,
