@@ -8,6 +8,12 @@ const Msg = require("./binmsg.js");
 const robot = require("./robot.js");
 const Config = require("./config.json");
 
+/* Middleware status object */
+middleware_status = {
+    robot_connection_active: false,
+    connected_clients: 0,
+}
+
 /* Initialize robot client connection */
 
 let robotSocket = net.Socket();
@@ -28,6 +34,8 @@ robotSocket.on("connect", () => {
 robotSocket.on("ready", () => {
     console.log("Robot client socket is ready.");
     reconnect_timeout = 5000;
+    middleware_status.robot_connection_active = true;
+    io.sockets.emit("middleware_status", middleware_status);
 });
 
 const WANT_OPCODE1 = 0;
@@ -121,6 +129,8 @@ robotSocket.on("end", () => {
 reconnect_timeout = 5000;
 robotSocket.on("close", () => {
     console.log(`Robot client socket is closed, waiting ${reconnect_timeout/1000} s to reconnect.`);
+    middleware_status.robot_connection_active = false;
+    io.sockets.emit("middleware_status", middleware_status);
 
     setTimeout(() => {
 	console.log("Reconnecting to robot.");
@@ -150,11 +160,15 @@ io.on("connection", (socket) => {
     console.log(`SocketIO client id ${socket.id} connected.`);
 
     clientConnectionPool[socket.id] = socket;
+    middleware_status.connected_clients += 1;
 
     io.sockets.emit("robot_status", robot.getStatus());
+    io.sockets.emit("middleware_status", middleware_status);
 
     socket.on("disconnect", () => {
 	console.log(`SocketIO client id ${socket.id} disconnected.`);
+	middleware_status.connected_clients -= 1;
+	io.sockets.emit("middleware_status", middleware_status);
     });
 
     socket.on("error", (error) => {
