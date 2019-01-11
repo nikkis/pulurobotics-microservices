@@ -206,7 +206,7 @@ function decodeMessage(msgdata) {
 	}
 	break;
     case TYPE_ROBOTINFO:
-	console.log("decoding TYPE_ROBOTINFO");
+	//console.log("decoding TYPE_ROBOTINFO");
 	message.robot_size_x = data.readIntBE(0, 2);
 	message.robot_size_y = data.readIntBE(2, 2);
 	message.robot_origin_x = data.readIntBE(4, 2);
