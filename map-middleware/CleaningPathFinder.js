@@ -1,6 +1,9 @@
 const MAP_CONSTANTS = require('./MapConstants');
 const robot = require('../command-middleware/robot');
 
+const Jimp = require('jimp');
+const Config = require('./config.json');
+
 class CleaningPathFinder {
 
   constructor() {
@@ -9,26 +12,26 @@ class CleaningPathFinder {
     this.constraintsMap = [];
     this.firstMapPageIndex = { x: 0, y: 0 };
     this._robotSize = {
-      dx:null,
-      dy:null
+      dx: null,
+      dy: null
     };
 
     this._tmpPos = {
-      x:0,
-      y:0,
-      angle:0
+      x: 0,
+      y: 0,
+      angle: 0
     };
 
     this.initConstraintsMapPages();
     this.setRobotSize();
-    console.log("Robot size is: " + this._robotSize.dx +", "+ this._robotSize.dy);
-    if(this._robotSize.dx == null) {
-      this._robotSize.dx=16;
+    console.log("Robot size is: " + this._robotSize.dx + ", " + this._robotSize.dy);
+    if (this._robotSize.dx == null) {
+      this._robotSize.dx = 16;
     }
 
-      // Do any other init stuff here
-    }
-  
+    // Do any other init stuff here
+  }
+
 
   initConstraintsMapPages() {
 
@@ -48,28 +51,33 @@ class CleaningPathFinder {
     }
   }
 
-// robotSize: dimension (i.e. dx, dy) of the robot  // check data structures size_x size_y (from robot.js)
+  // robotSize: dimension (i.e. dx, dy) of the robot  // check data structures size_x size_y (from robot.js)
 
-// Private attributes
-// _tmpPos: temporary position (i.e. x, y, angle) while computing coverage path
+  // Private attributes
+  // _tmpPos: temporary position (i.e. x, y, angle) while computing coverage path
 
 
-  getPath(position) {
-    console.log("Initial position requested (x,y): ("+position.x+","+position.y+")");
+  getPath(position, testPng=false) {
+
+    if(testPng) {
+      testPNG(this.constraintsMap);
+    }
+
+    console.log("Initial position requested (x,y): (" + position.x + "," + position.y + ")");
     let initPosition = {
-      x:position.x,
-      y:position.y
+      x: position.x,
+      y: position.y
     };
-    if(position.x > this.constraintsMap.length){
+    if (position.x > this.constraintsMap.length) {
       console.log('Initial position x out of range');
       initPosition.x = 1280;
       console.log('Position x recentered:');
     }
-    else{
-      if(position.y>this.constraintsMap[position.x].length){
+    else {
+      if (position.y > this.constraintsMap[position.x].length) {
         console.log('Initial position y out of range');
         initPosition.y = 1280;
-        console.log('Position y recentered: '+initPosition.y);
+        console.log('Position y recentered: ' + initPosition.y);
       }
     }
     let coordinateList = [];
@@ -104,7 +112,7 @@ class CleaningPathFinder {
     coordinateList.push(third);
     */
 
-        // Replacing all undefined area with obstacles
+    // Replacing all undefined area with obstacles
     /*
     for(let i=0; i<this.constraintsMap.length; i++){
       for(let j=0;j<this.constraintsMap[i].length;j++){
@@ -140,13 +148,13 @@ class CleaningPathFinder {
       }
     }
     */
-    
-    console.log('Value of _robotSize.dx = '+this._robotSize.dx);
+
+    console.log('Value of _robotSize.dx = ' + this._robotSize.dx);
     let forwardStep = Math.round(this._robotSize.dx); // Step ahead temporary position
     let turns = 0;
 
     let obstacle = false;
-    
+
     while (1) {
       while (!obstacle) {
         this._tmpPos.x += Math.round(forwardStep * Math.cos(this._tmpPos.angle));
@@ -214,17 +222,17 @@ class CleaningPathFinder {
     let sensorArray = [];
     let sensorSize = this._robotSize.dx;
 
-    if (this._robotSize.dx%2 != 0){
+    if (this._robotSize.dx % 2 != 0) {
       sensorSize++;
     }
 
     let X = Math.round(sensorSize); // Same as forwardStep
-    let Y = - Math.round(sensorSize/2);
-    for (var i = 0; i<(sensorSize+1); i++){
-      let y = Y+i;
-      let sensor ={
-        x:X,
-        y:y
+    let Y = - Math.round(sensorSize / 2);
+    for (var i = 0; i < (sensorSize + 1); i++) {
+      let y = Y + i;
+      let sensor = {
+        x: X,
+        y: y
       };
       sensorArray.push(sensor);
     }
@@ -244,7 +252,7 @@ class CleaningPathFinder {
     returns true in there is an obstacle in front of tmpPos
   */
   checkObstacle() {
-    
+
     //    sensorArray in robot own coordinates, the robot looks at its width ahead (dx)
     //       Example of y values if dx=5: (X_1,Y_1) [(dx,-2),(dx,-1),(dx,0),(dx,1),(dx,2)]
 
@@ -255,79 +263,79 @@ class CleaningPathFinder {
     // Find obstacles in front of robot: X_robot position + r*cos(alpha) +
     // int[] frontObstacles = map.(robot(x,y) + (r*cos(alpha), r*sin(alpha)) + (X_1,Y_1)*Jacobian(alpha));
     let frontObstacles = [];
-    for (let i=0; i<sensorObstacles.length; i++){
-        let X = Math.round(this._tmpPos.x + 
-            (sensorObstacles[i].x * Math.cos(this._tmpPos.angle) - sensorObstacles[i].y * Math.sin(this._tmpPos.angle)));
-        let Y = Math.round(this._tmpPos.y + 
-            (sensorObstacles[i].x * Math.sin(this._tmpPos.angle) + sensorObstacles[i].y * Math.cos(this._tmpPos.angle)));
+    for (let i = 0; i < sensorObstacles.length; i++) {
+      let X = Math.round(this._tmpPos.x +
+        (sensorObstacles[i].x * Math.cos(this._tmpPos.angle) - sensorObstacles[i].y * Math.sin(this._tmpPos.angle)));
+      let Y = Math.round(this._tmpPos.y +
+        (sensorObstacles[i].x * Math.sin(this._tmpPos.angle) + sensorObstacles[i].y * Math.cos(this._tmpPos.angle)));
 
-        // Test: Int values after transform from virtual robot own coordinates to map coordinates
-        // console.log("X :" + X);
-        // console.log("Y :" + Y);
+      // Test: Int values after transform from virtual robot own coordinates to map coordinates
+      // console.log("X :" + X);
+      // console.log("Y :" + Y);
 
-        if(Y > 0){
-          if(Y < this.constraintsMap.length){
-            if(X > 0){
-              if(X < this.constraintsMap[Y].length){
-                if(this.constraintsMap[Y][X] == null){
-                  console.log('Issue constraintsMap['+Y+']['+X+'] == null');
-                  frontObstacles.push(1);
-                }
-                else{
-                  frontObstacles.push(this.constraintsMap[Y][X]);
-                }
-              }
-              else{
-                console.log("X too big for the size of map");
+      if (Y > 0) {
+        if (Y < this.constraintsMap.length) {
+          if (X > 0) {
+            if (X < this.constraintsMap[Y].length) {
+              if (this.constraintsMap[Y][X] == null) {
+                console.log('Issue constraintsMap[' + Y + '][' + X + '] == null');
                 frontObstacles.push(1);
               }
+              else {
+                frontObstacles.push(this.constraintsMap[Y][X]);
+              }
             }
-            else{
-              console.log("X < 0, too small for index in map");
+            else {
+              console.log("X too big for the size of map");
               frontObstacles.push(1);
             }
           }
-          else{
-            console.log("Y too big for the size of map");
+          else {
+            console.log("X < 0, too small for index in map");
             frontObstacles.push(1);
           }
         }
-        else{
-          console.log("Y < 0, too small for index in map");
+        else {
+          console.log("Y too big for the size of map");
           frontObstacles.push(1);
         }
+      }
+      else {
+        console.log("Y < 0, too small for index in map");
+        frontObstacles.push(1);
+      }
     }
 
-    console.log('Size of frontObstacles '+frontObstacles.length);
-    console.log('_tmpPos = ('+this._tmpPos.x+','+this._tmpPos.y+', angle= '+this._tmpPos.angle+')');
+    console.log('Size of frontObstacles ' + frontObstacles.length);
+    console.log('_tmpPos = (' + this._tmpPos.x + ',' + this._tmpPos.y + ', angle= ' + this._tmpPos.angle + ')');
 
     // Test: checking the size of the array in front of _tmpPos
     // console.log("Size of frontObstacles " + frontObstacles.length);
-    if(frontObstacles.length == 0){
+    if (frontObstacles.length == 0) {
       console.log("Error: frontObstacles empty");
       return true;
     }
 
     let count = 0;
-    for(var i=0; i<frontObstacles.length; i++){
-        if (frontObstacles[i] == 1){
-            count++;    
-        }
-        
-        // Test: Used for checking all values in front of _tmpPos
-        // console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
+    for (var i = 0; i < frontObstacles.length; i++) {
+      if (frontObstacles[i] == 1) {
+        count++;
+      }
+
+      // Test: Used for checking all values in front of _tmpPos
+      // console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
     }
 
-    if (count > 0){//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
+    if (count > 0) {//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
       obstacle = true;
     }
 
-    if(obstacle == true){
-      console.log('Number of obstacles in front of _tmpPos: '+count);
-      console.log('Obstacle found in front of coordinate: ('+this._tmpPos.x+','+this._tmpPos.y+')');
+    if (obstacle == true) {
+      console.log('Number of obstacles in front of _tmpPos: ' + count);
+      console.log('Obstacle found in front of coordinate: (' + this._tmpPos.x + ',' + this._tmpPos.y + ')');
     }
     return obstacle;
-    
+
   }
 
   /**
@@ -337,7 +345,7 @@ class CleaningPathFinder {
    */
   setMapPageConstraints(mapPageConstraints, mapPageId) {
     try {
-      
+
       const firstPageIndexY = 127;
       const firstPageIndexX = 127;
 
@@ -381,3 +389,58 @@ class CleaningPathFinder {
 
 
 module.exports = CleaningPathFinder;
+
+
+
+function testPNG(mapData) {
+
+  const color1 = Jimp.cssColorToHex('#000000');
+  const color0 = Jimp.cssColorToHex('#f4f067');
+  const colorUndef = Jimp.cssColorToHex('#bebebe');
+
+  const imgData = [...Array(MAP_CONSTANTS.MAP_DIM * Config.mapPagesNum)].map(x => Array(MAP_CONSTANTS.MAP_DIM * Config.mapPagesNum).fill(0));
+
+  for (let y = 0; y < mapData.length; y++) {
+    for (let x = 0; x < mapData[y].length; x++) {
+      const p = mapData[y][x];
+      if (p === 1) {
+        imgData[y][x] = color1;
+      } else if (p === 0) {
+        imgData[y][x] = color0;
+      } else if (p === undefined) {
+        imgData[y][x] = colorUndef;
+      } else {
+        console.log('SOMETHING WRONG');
+      }
+    }
+  }
+
+  writePngFile('./test.png', imgData);
+
+
+
+  function writePngFile(src, data) {
+    console.log('Writing map');
+
+    new Jimp(MAP_CONSTANTS.MAP_DIM * Config.mapPagesNum, MAP_CONSTANTS.MAP_DIM * Config.mapPagesNum, 0xFFFFFFFF, function (err, image) {
+      try {
+        if (err) throw err;
+
+        data.forEach((row, y) => {
+          row.forEach((color, x) => {
+            image
+              .setPixelColor(color, x, y);
+          });
+        });
+
+        image.write(src, (err) => {
+          if (err) throw err;
+        });
+
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+
+}

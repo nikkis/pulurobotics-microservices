@@ -334,6 +334,8 @@ class MapServer {
       } else {
         throw 'Give both startX and startY as query parameters';
       }
+
+      const createTestPng = req.query.testPng ? true : false;
       
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -342,7 +344,7 @@ class MapServer {
       
       if(this.pathFinder) {
         
-        let cleaningPath = this.pathFinder.getPath(coordinates);
+        let cleaningPath = this.pathFinder.getPath(coordinates, createTestPng);
 
         let returnData = { cleaningPath };
   
