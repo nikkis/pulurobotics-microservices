@@ -255,12 +255,12 @@ class BinaryToPng {
       yy = MAP_CONSTANTS.MAP_DIM - 1, xx = 0;
       for (let i = 0; i < tempImgPixels.length; i++) {
         // Check for rows
-        if (xx === 0) {
+        if (xx === MAP_CONSTANTS.MAP_DIM) {
           xx = 0;
           --yy;
         }
 
-        if(yy === 0) {console.log('yy', yy, 'xx', xx);}
+        if(xx === 0) {console.log('yy', yy, 'xx', xx);}
         mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
         ++xx;
       }
