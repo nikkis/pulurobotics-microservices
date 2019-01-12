@@ -217,7 +217,9 @@ class BinaryToPng {
 
               if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].numVisited > 0) {
                 tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
+
                 tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
+                tempImgPixels2[(MAP_PAGE_W - 1 - yInd + 1) * MAP_PAGE_W + xInd] = this.visitedColor;
               }
 
               if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].constraints & CONSTRAINT_FORBIDDEN) {
