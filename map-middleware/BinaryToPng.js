@@ -83,7 +83,7 @@ class BinaryToPng {
 
     this.voxmapBlankColor = Jimp.cssColorToHex('#bebebe'); //Jimp.rgbaToInt(0, 0, 0, 50);
     this.forbiddenColor = Jimp.rgbaToInt(255, 190, 190, VOXMAP_ALPHA);
-    this.visitedColor = Jimp.rgbaToInt(255, 255, 255, VOXMAP_ALPHA);
+    this.visitedColor = Jimp.cssColorToHex('#ffffff'); //Jimp.rgbaToInt(255, 255, 255, VOXMAP_ALPHA);
 
   }
 
@@ -161,8 +161,8 @@ class BinaryToPng {
       for (let i2 = 0; i2 < metadata.length; i2 += 4) {
         newMetadata.push({
           timestamp: metadata[i2],
-          constraints: metadata[i2 + 1],
-          numVisited: metadata[i2 + 2],
+          numVisited: metadata[i2 + 1],
+          constraints: metadata[i2 + 2],
           reserved: metadata[i2 + 3]
         });
       }
@@ -212,19 +212,17 @@ class BinaryToPng {
               }
             }
 
-            
+
             if ((((yInd & 1) && (xInd & 1)))) {
-              //console.log('WUUU', newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)]);
-              if (newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)]) {// &&
-                //newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)].constraints & CONSTRAINT_FORBIDDEN) {
-                console.log('JUUUUU UU ------------------------ ---- - ');
-                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
+
+              if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].numVisited > 0) {
+                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
+                tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
               }
 
-              if (newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)] &&
-                newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)].numVisited > 0) {
-                  console.log('JUUUUU UU 2 ------------------------ ---- - ');
-                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
+              if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].constraints & CONSTRAINT_FORBIDDEN) {
+                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
+                tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
               }
             }
 
