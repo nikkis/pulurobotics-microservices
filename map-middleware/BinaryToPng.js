@@ -212,10 +212,11 @@ class BinaryToPng {
               }
             }
 
-            /*
+            
             if ((((yInd & 1) && (xInd & 1)))) {
-              if (newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)] &&
-                newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)].constraints & CONSTRAINT_FORBIDDEN) {
+              //console.log('WUUU', newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)]);
+              if (newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)]) {// &&
+                //newMetadata[(yInd / 2) * (MAP_PAGE_W / 2) + (xInd / 2)].constraints & CONSTRAINT_FORBIDDEN) {
                 console.log('JUUUUU UU ------------------------ ---- - ');
                 tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
               }
@@ -225,7 +226,7 @@ class BinaryToPng {
                   console.log('JUUUUU UU 2 ------------------------ ---- - ');
                 tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
               }
-            }*/
+            }
 
 
           }
@@ -249,17 +250,19 @@ class BinaryToPng {
         ++xx;
       }
 
-      yy = MAP_CONSTANTS.MAP_DIM - 1, xx = MAP_CONSTANTS.MAP_DIM - 1;
-      for (let i = mapPageConstraintsTemp.length - 1; i >= 0; --i) {
+      console.log('mapPageConstraintsTemp', mapPageConstraintsTemp.length);
+
+      yy = MAP_CONSTANTS.MAP_DIM - 1, xx = 0;
+      for (let i = 0; i < tempImgPixels.length; i++) {
         // Check for rows
         if (xx === 0) {
-          xx = MAP_CONSTANTS.MAP_DIM - 1;
+          xx = 0;
           --yy;
         }
-        if(yy > 0) {
-          mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
-          --xx;
-        }
+
+        if(yy === 0) {console.log('yy', yy, 'xx', xx);}
+        mapPageConstraints[yy][xx] = mapPageConstraintsTemp[i];
+        ++xx;
       }
 
       this.writePngFile(src, newImageData, mapPageId, notifyCB);
