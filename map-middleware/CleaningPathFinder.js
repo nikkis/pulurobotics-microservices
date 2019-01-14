@@ -24,11 +24,16 @@ class CleaningPathFinder {
 
     this.initConstraintsMapPages();
     this.setRobotSize();
-    console.log("Robot size is: " + this._robotSize.dx + ", " + this._robotSize.dy);
+    
     if (this._robotSize.dx == null) {
       this._robotSize.dx = 16;
     }
 
+    if (this._robotSize.dy == null) {
+      this._robotSize.dy = 20;
+    }
+
+    console.log("Robot size is: " + this._robotSize.dx + ", " + this._robotSize.dy);
     // Do any other init stuff here
   }
 
@@ -58,20 +63,24 @@ class CleaningPathFinder {
 
 
   getPath(position, testPng=false) {
+    testPng = true;
 
     if(testPng) {
       testPNG(this.constraintsMap);
     }
 
+    const x_shift = 256;
+    const y_shift = 512; 
+
     console.log("Initial position requested (x,y): (" + position.x + "," + position.y + ")");
     let initPosition = {
-      x: position.x,
-      y: position.y
+      x: (position.x-x_shift),
+      y: ((this.constraintsMap.length - position.y)+y_shift)
     };
     if (position.x > this.constraintsMap.length) {
       console.log('Initial position x out of range');
       initPosition.x = 1280;
-      console.log('Position x recentered:');
+      console.log('Position x recentered: '+initPosition.x);
     }
     else {
       if (position.y > this.constraintsMap[position.x].length) {
@@ -83,34 +92,12 @@ class CleaningPathFinder {
     let coordinateList = [];
 
     this._tmpPos = initPosition;
-
     this._tmpPos.angle = 0;
 
-    // Checking how x and y grow
-    /*
-    console.log("First _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
-    let firstCoord = {
-      x:this._tmpPos.x,
-      y:this._tmpPos.y
-    };
-    coordinateList.push(firstCoord);
-
-    this._tmpPos.x+=256;
-    console.log("Second _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
-    let second = {
-      x:this._tmpPos.x,
-      y:this._tmpPos.y
-    };
-    coordinateList.push(second);
-
-    this._tmpPos.y+=256;
-    console.log("Third _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
-    let third = {
-      x:this._tmpPos.x,
-      y:this._tmpPos.y
-    };
-    coordinateList.push(third);
-    */
+    let X = this._tmpPos.x+x_shift;
+    let Y = (this.constraintsMap.length - this._tmpPos.y)+y_shift;
+    // Test: init coordinates given as first of the output list
+    // coordinateList.push({x:X,y:Y});
 
     // Replacing all undefined area with obstacles
     /*
@@ -123,37 +110,45 @@ class CleaningPathFinder {
     }
     */
 
-    /* Test: Print map number of 0s in each row, position of first 0 in each row
-    let zerosTogether=0;
-    for(let i=0; i<this.constraintsMap.length; i++){
-      let zeroFound = false;
-      for(let j=0; j<this.constraintsMap[i].length; j++){
-        if (zeroFound == false){
-          if (this.constraintsMap[i][j]==0){
-            zeroFound = true;
-            zerosTogether++;
-            console.log('Zeros from ('+i+','+j+')');
-          }
-        }
-        else{
-          if(this.constraintsMap[i][j]==0){
-            zerosTogether++;
-          }
-          else{
-            console.log('Number of zeros together: '+ zerosTogether);
-            zerosTogether=0;
-            zeroFound = false;
-          }
-        }
-      }
-    }
-    */
-
     console.log('Value of _robotSize.dx = ' + this._robotSize.dx);
     let forwardStep = Math.round(this._robotSize.dx); // Step ahead temporary position
     let turns = 0;
 
     let obstacle = false;
+
+/* Test: transform between x y in constraintsMap and xy in UI
+    while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x]!= null){
+      while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x]!= null){
+        this._tmpPos.x++;
+      }
+      this._tmpPos.x-=1;
+      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+      let X1 = (this._tmpPos.x+x_shift);
+      let Y1 = (this.constraintsMap.length - this._tmpPos.y) +512;
+      coordinateList.push({x:X1,y:Y1});
+
+      this._tmpPos.y -= forwardStep;
+      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+      let X2 = (this._tmpPos.x+x_shift);
+      let Y2 = (this.constraintsMap.length-this._tmpPos.y)+512;
+      coordinateList.push({x:X2,y:Y2});
+
+      while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x] != null) {
+        this._tmpPos.x--;
+      }
+      this._tmpPos.x+=1;
+      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+      let X3 = (this._tmpPos.x+x_shift);
+      let Y3 = (this.constraintsMap.length-this._tmpPos.y)+512;
+      coordinateList.push({x:X3,y:Y3});
+
+      this._tmpPos.y -= forwardStep;
+      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+      let X4 = (this._tmpPos.x+x_shift);
+      let Y4 = (this.constraintsMap.length-this._tmpPos.y)+512;
+      coordinateList.push({x:X4,y:Y4});
+    }
+ */
 
     while (1) {
       while (!obstacle) {
@@ -164,8 +159,8 @@ class CleaningPathFinder {
       }
 
       let coord = {
-        x: this._tmpPos.x,
-        y: this._tmpPos.y
+        x: this._tmpPos.x + x_shift,
+        y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
       }
       coordinateList.push(coord);
       console.log("Coordinate written after long length: ", coord);
@@ -181,15 +176,16 @@ class CleaningPathFinder {
       this._tmpPos.angle += turnAngle; // Turn
       obstacle = this.checkObstacle();
       if (obstacle) {
-        console.log("Stopped at corner")
+        console.log("Stopped at corner");
+        console.log("List of coords: ", coordinateList);
         return coordinateList;
       } // Ending area covering
 
       this._tmpPos.x += Math.round(forwardStep * Math.cos(this._tmpPos.angle));
       this._tmpPos.y += Math.round(forwardStep * Math.sin(this._tmpPos.angle));
       let coord1 = {
-        x: this._tmpPos.x,
-        y: this._tmpPos.y
+        x: this._tmpPos.x + x_shift,
+        y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
       }
 
       coordinateList.push(coord1);
@@ -326,7 +322,7 @@ class CleaningPathFinder {
       // console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
     }
 
-    if (count > 0) {//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
+    if (count > 0){ //Math.round(frontObstacles.length/8)) {//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
       obstacle = true;
     }
 
