@@ -1,8 +1,8 @@
 {
-  "mapDataFilePath": "/home/hrst/maps/",
+  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/uusikartta/",
   "mapPagesNum": 10,
   "port": 8080,
-  "updateInterval": 15,
+  "updateInterval": 8,
   "autoDetect": true,
   "constraintsHeight": 3
 }

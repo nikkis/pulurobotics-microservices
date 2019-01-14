@@ -24,7 +24,7 @@ class CleaningPathFinder {
 
     this.initConstraintsMapPages();
     this.setRobotSize();
-    
+
     if (this._robotSize.dx == null) {
       this._robotSize.dx = 16;
     }
@@ -62,25 +62,25 @@ class CleaningPathFinder {
   // _tmpPos: temporary position (i.e. x, y, angle) while computing coverage path
 
 
-  getPath(position, testPng=false) {
+  getPath(position, random = true, testPng = false) {
     //testPng = true;
 
-    if(testPng) {
+    if (testPng) {
       testPNG(this.constraintsMap);
     }
 
     let x_shift = 256;
-    let y_shift = 512; 
+    let y_shift = 512;
 
     console.log("Initial position requested (x,y): (" + position.x + "," + position.y + ")");
     let initPosition = {
-      x: (position.x-x_shift),
-      y: ((this.constraintsMap.length - position.y)+y_shift)
+      x: (position.x - x_shift),
+      y: ((this.constraintsMap.length - position.y) + y_shift)
     };
     if (position.x > this.constraintsMap.length) {
       console.log('Initial position x out of range');
       initPosition.x = 1280;
-      console.log('Position x recentered: '+initPosition.x);
+      console.log('Position x recentered: ' + initPosition.x);
     }
     else {
       if (position.y > this.constraintsMap[position.x].length) {
@@ -116,147 +116,147 @@ class CleaningPathFinder {
 
     let obstacle = false;
 
-/* Test: transform between x y in constraintsMap and xy in UI
-    while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x]!= null){
-      while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x]!= null){
-        this._tmpPos.x++;
-      }
-      this._tmpPos.x-=1;
-      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
-      let X1 = (this._tmpPos.x+x_shift);
-      let Y1 = (this.constraintsMap.length - this._tmpPos.y) +512;
-      coordinateList.push({x:X1,y:Y1});
+    /* Test: transform between x y in constraintsMap and xy in UI
+        while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x]!= null){
+          while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x]!= null){
+            this._tmpPos.x++;
+          }
+          this._tmpPos.x-=1;
+          console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+          let X1 = (this._tmpPos.x+x_shift);
+          let Y1 = (this.constraintsMap.length - this._tmpPos.y) +512;
+          coordinateList.push({x:X1,y:Y1});
+    
+          this._tmpPos.y -= forwardStep;
+          console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+          let X2 = (this._tmpPos.x+x_shift);
+          let Y2 = (this.constraintsMap.length-this._tmpPos.y)+512;
+          coordinateList.push({x:X2,y:Y2});
+    
+          while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x] != null) {
+            this._tmpPos.x--;
+          }
+          this._tmpPos.x+=1;
+          console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+          let X3 = (this._tmpPos.x+x_shift);
+          let Y3 = (this.constraintsMap.length-this._tmpPos.y)+512;
+          coordinateList.push({x:X3,y:Y3});
+    
+          this._tmpPos.y -= forwardStep;
+          console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
+          let X4 = (this._tmpPos.x+x_shift);
+          let Y4 = (this.constraintsMap.length-this._tmpPos.y)+512;
+          coordinateList.push({x:X4,y:Y4});
+        }
+     */
 
-      this._tmpPos.y -= forwardStep;
-      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
-      let X2 = (this._tmpPos.x+x_shift);
-      let Y2 = (this.constraintsMap.length-this._tmpPos.y)+512;
-      coordinateList.push({x:X2,y:Y2});
+    
 
-      while(this.constraintsMap[this._tmpPos.y][this._tmpPos.x] != null) {
-        this._tmpPos.x--;
-      }
-      this._tmpPos.x+=1;
-      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
-      let X3 = (this._tmpPos.x+x_shift);
-      let Y3 = (this.constraintsMap.length-this._tmpPos.y)+512;
-      coordinateList.push({x:X3,y:Y3});
-
-      this._tmpPos.y -= forwardStep;
-      console.log('constraintsMap[y][x] ='+this.constraintsMap[this._tmpPos.y][this._tmpPos.x]);
-      let X4 = (this._tmpPos.x+x_shift);
-      let Y4 = (this.constraintsMap.length-this._tmpPos.y)+512;
-      coordinateList.push({x:X4,y:Y4});
+    if (random == true) {
+      coordinateList = this.random_mode(forwardStep);
     }
- */
-
-  let random = true;
-
-  if (random == true){
-    coordinateList = this.random_mode(forwardStep);
-  }
-  else{
-    coordinateList = this.zig_zag(forwardStep);
-  }
+    else {
+      coordinateList = this.zig_zag(forwardStep);
+    }
 
     console.log("List of coords: ", coordinateList);
     return coordinateList;
   }
 
-random_mode (forwardStep) {
+  random_mode(forwardStep) {
 
-  let tick = 0;
-  let obstacle = false;
-  let coordinateList = [];
-  let _forwardStep = forwardStep;
+    let tick = 0;
+    let obstacle = false;
+    let coordinateList = [];
+    let _forwardStep = forwardStep;
 
-  const x_shift = 256;
-  const y_shift = 512;
+    const x_shift = 256;
+    const y_shift = 512;
 
-  while(tick < 10){
-    while(!obstacle){
-      // Go 1 step forward in the direction of angle and check for obstacle
-      this._tmpPos.x += Math.round(_forwardStep * Math.cos(this._tmpPos.angle));
-      this._tmpPos.y += Math.round(_forwardStep * Math.sin(this._tmpPos.angle));
-      obstacle = this.checkObstacle();
+    while (tick < 10) {
+      while (!obstacle) {
+        // Go 1 step forward in the direction of angle and check for obstacle
+        this._tmpPos.x += Math.round(_forwardStep * Math.cos(this._tmpPos.angle));
+        this._tmpPos.y += Math.round(_forwardStep * Math.sin(this._tmpPos.angle));
+        obstacle = this.checkObstacle();
+      }
+
+      let coord = {
+        x: this._tmpPos.x + x_shift,
+        y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
+      }
+      console.log('Obstacle found in front of (' + coord.x + ',' + coord.y + ')');
+      coordinateList.push(coord);
+
+      // Random angle between -PI and PI
+      this._tmpPos.angle = (Math.random() * (Math.PI - (-Math.PI)) + (-Math.PI));
+      console.log('Changing direction: angle=' + this._tmpPos.angle);
+      obstacle = false;
+      tick++;
     }
 
-    let coord = {
-      x: this._tmpPos.x + x_shift,
-      y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
-    }
-    console.log('Obstacle found in front of ('+coord.x+','+coord.y+')');
-    coordinateList.push(coord);
-
-    // Random angle between -PI and PI
-    this._tmpPos.angle = (Math.random()*(Math.PI-(-Math.PI)) + (-Math.PI));
-    console.log('Changing direction: angle='+this._tmpPos.angle);
-    obstacle = false;
-    tick++;
+    return coordinateList;
   }
 
-  return coordinateList;
-}
+  zig_zag(forwardStep) {
+    let turns = 0;
 
-zig_zag (forwardStep) {
-let turns = 0;
+    let obstacle = false;
+    let coordinateList = [];
+    let _forwardStep = forwardStep;
 
-  let obstacle = false;
-  let coordinateList = [];
-  let _forwardStep = forwardStep;
+    const x_shift = 256;
+    const y_shift = 512;
 
-  const x_shift = 256;
-  const y_shift = 512;
+    while (1) {
+      while (!obstacle) {
+        // Go forward in the direction of angle
+        this._tmpPos.x += Math.round(_forwardStep * Math.cos(this._tmpPos.angle));
+        this._tmpPos.y += Math.round(_forwardStep * Math.sin(this._tmpPos.angle));
+        // console.log("Before obstacle value of _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
+        obstacle = this.checkObstacle();
+      }
 
-  while (1) {
-    while (!obstacle) {
-      // Go forward in the direction of angle
+      let coord = {
+        x: this._tmpPos.x + x_shift,
+        y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
+      };
+      coordinateList.push(coord);
+      console.log("Coordinate written after long length: ", coord);
+      // console.log("List of coords: ", coordinateList);
+
+      let turnAngle = 0;
+
+      if (turns % 2 == 0) {
+        turnAngle = (Math.PI) / 2; // Turn right 90 degrees
+      }
+      else { turnAngle = -(Math.PI) / 2 } // Turn left 90 degrees
+
+      this._tmpPos.angle += turnAngle; // Turn
+      obstacle = this.checkObstacle();
+      if (obstacle) {
+        console.log("Stopped at corner");
+        console.log("List of coords: ", coordinateList);
+        return coordinateList;
+      } // Ending area covering
+
       this._tmpPos.x += Math.round(_forwardStep * Math.cos(this._tmpPos.angle));
       this._tmpPos.y += Math.round(_forwardStep * Math.sin(this._tmpPos.angle));
-      // console.log("Before obstacle value of _tmpPos (x,y,angle): ("+this._tmpPos.x+","+this._tmpPos.y+","+this._tmpPos.angle+")");
-      obstacle = this.checkObstacle();
+      let coord1 = {
+        x: this._tmpPos.x + x_shift,
+        y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
+      };
+
+      coordinateList.push(coord1);
+      console.log("Coordinate written after short length: ", coord1);
+      // console.log("List of coords: ", coordinateList);
+
+      this._tmpPos.angle += turnAngle; // Turn
+
+      turns++; // Counter number of +-180 degrees turns
+      console.log("Number of 180 degrees turns is: " + turns);
     }
-
-    let coord = {
-      x: this._tmpPos.x + x_shift,
-      y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
-    };
-    coordinateList.push(coord);
-    console.log("Coordinate written after long length: ", coord);
-    // console.log("List of coords: ", coordinateList);
-
-    let turnAngle = 0;
-
-    if (turns % 2 == 0) {
-      turnAngle = (Math.PI) / 2; // Turn right 90 degrees
-    }
-    else { turnAngle = -(Math.PI) / 2 } // Turn left 90 degrees
-
-    this._tmpPos.angle += turnAngle; // Turn
-    obstacle = this.checkObstacle();
-    if (obstacle) {
-      console.log("Stopped at corner");
-      console.log("List of coords: ", coordinateList);
-      return coordinateList;
-    } // Ending area covering
-
-    this._tmpPos.x += Math.round(_forwardStep * Math.cos(this._tmpPos.angle));
-    this._tmpPos.y += Math.round(_forwardStep * Math.sin(this._tmpPos.angle));
-    let coord1 = {
-      x: this._tmpPos.x + x_shift,
-      y: (this.constraintsMap.length - this._tmpPos.y) + y_shift
-    };
-
-    coordinateList.push(coord1);
-    console.log("Coordinate written after short length: ", coord1);
-    // console.log("List of coords: ", coordinateList);
-
-    this._tmpPos.angle += turnAngle; // Turn
-
-    turns++; // Counter number of +-180 degrees turns
-    console.log("Number of 180 degrees turns is: " + turns);
   }
-}
 
   setRobotSize() {
     const ROBOT_SIZE_X = robot.size_x;
@@ -378,7 +378,7 @@ let turns = 0;
       // console.log("Value " + i + " of frontObstacles: " + frontObstacles[i]);
     }
 
-    if (count > 0){ //Math.round(frontObstacles.length/8)) {//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
+    if (count > 0) { //Math.round(frontObstacles.length/8)) {//(count > 0){ // Different options of front obstacles (count == frontObstacles.length){
       obstacle = true;
     }
 
