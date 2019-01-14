@@ -178,58 +178,53 @@ class BinaryToPng {
       for (let xInd = 0; xInd < MAP_PAGE_W; xInd++) {
         for (let yInd = 0; yInd < MAP_PAGE_W; yInd++) {
 
-          /////// Constraints
           tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.voxmapBlankColor;
+          /////// Constraints
           tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color0;
           mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 0;
           /////// Constraints
 
-          if (false) { //page -> meta[(y / 2) * (MAP_PAGE_W / 2) + (x / 2)].constraints & CONSTRAINT_FORBIDDEN) {
-            //pixels[(MAP_PAGE_W - 1 - y) * MAP_PAGE_W + x] = this.forbiddenColor;
+          const val = newVoxelData[yInd * MAP_PAGE_W + xInd];
+
+          for (let slice = 0; slice < val.aByte.toString(2).length; slice++) {
+            //for (let slice = 0; slice < cur_slice; slice++) {
+            if (val.aByte & (1 << slice)) {
+              tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.colors[slice];
+              if (slice > constraintsHeight) {
+                mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 1;
+                tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color1;
+              }
+            }
           }
-          else {
-
-            const val = newVoxelData[yInd * MAP_PAGE_W + xInd];
-
-            for (let slice = 0; slice < val.aByte.toString(2).length; slice++) {
-              //for (let slice = 0; slice < cur_slice; slice++) {
-              if (val.aByte & (1 << slice)) {
-                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.colors[slice];
-                if (slice > constraintsHeight) {
-                  mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 1;
-                  tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color1;
-                }
+          for (let slice = 0; slice < val.bByte.toString(2).length; slice++) {
+            //for (let slice = 0; slice < cur_slice; slice++) {
+            if (val.bByte & (1 << slice)) {
+              tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.colors[8 + slice];
+              if (8 + slice > constraintsHeight) {
+                mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 1;
+                tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color1;
               }
             }
-            for (let slice = 0; slice < val.bByte.toString(2).length; slice++) {
-              //for (let slice = 0; slice < cur_slice; slice++) {
-              if (val.bByte & (1 << slice)) {
-                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.colors[8 + slice];
-                if (8 + slice > constraintsHeight) {
-                  mapPageConstraintsTemp[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = 1;
-                  tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.color1;
-                }
-              }
-            }
-
-
-            if ((((yInd & 1) && (xInd & 1)))) {
-
-              if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].numVisited > 0) {
-                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
-
-                tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
-                tempImgPixels2[(MAP_PAGE_W - 1 - yInd + 1) * MAP_PAGE_W + xInd] = this.visitedColor;
-              }
-
-              if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].constraints & CONSTRAINT_FORBIDDEN) {
-                tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
-                tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
-              }
-            }
-
-
           }
+
+
+          if ((((yInd & 1) && (xInd & 1)))) {
+
+            if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].numVisited > 0) {
+              tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
+
+              tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.visitedColor;
+              tempImgPixels2[(MAP_PAGE_W - 1 - yInd + 1) * MAP_PAGE_W + xInd] = this.visitedColor;
+            }
+
+            if (newMetadata[parseInt(yInd / 2) * parseInt((MAP_PAGE_W / 2)) + parseInt((xInd / 2))].constraints & CONSTRAINT_FORBIDDEN) {
+              tempImgPixels[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
+              tempImgPixels2[(MAP_PAGE_W - 1 - yInd) * MAP_PAGE_W + xInd] = this.forbiddenColor;
+            }
+          }
+
+
+
 
         }
       }

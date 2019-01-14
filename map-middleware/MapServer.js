@@ -10,7 +10,7 @@ const MAP_FILE_PNG_EXTENSION = '.png';
 const MAP_FILE_CONSTRAINTS_EXTENSION = '.constraints.png';
 const MAP_FILE_EXTENSION = '.map';
 const MAP_PNG_DIR = 'images/';
-const MAP_DATA_DIR = 'data/';
+const MAP_DATA_DIR = Config.mapDataFilePath; //'data/';
 
 const MAP_CONSTANTS = require('./MapConstants');
 
@@ -85,12 +85,11 @@ class MapServer {
             }
           }
           ////////////////////////////
-
-          fs.copyFileSync(this.filePath + filename, MAP_DATA_DIR + filename);
-
           const mapPageId = that.getPageIDFromFilename(filename);
 
+          //fs.copyFileSync(this.filePath + filename, MAP_DATA_DIR + filename);
           const stats = fs.statSync(MAP_DATA_DIR + filename);
+          
           const fileSizeInBytes = stats.size;
 
           if (!MAP_CONSTANTS.FILE_SIZES.includes(fileSizeInBytes)) {
@@ -274,6 +273,7 @@ class MapServer {
       const pngFileName = MAP_PNG_DIR + fileName + MAP_FILE_PNG_EXTENSION;
       const pngFileName2 = MAP_PNG_DIR + fileName + MAP_FILE_CONSTRAINTS_EXTENSION;
       //const fullPath = Config.mapDataFilePath + fileName;
+      
       const fullPath = MAP_DATA_DIR + fileName;
 
       const notifyCB = (mapPageId) => {
