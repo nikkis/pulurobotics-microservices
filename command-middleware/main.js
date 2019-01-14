@@ -285,6 +285,13 @@ io.on("connection", (socket) => {
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "set_vacuum"});
     });
+
+    socket.on("reset_map", () => {
+	console.log("Received reset_map message");
+	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 10);
+	robotSocket.write(cmd);
+	io.sockets.emit("command_received", {command: "reset_map"});
+    });
 });
 
 /* Start Socket.io server */
