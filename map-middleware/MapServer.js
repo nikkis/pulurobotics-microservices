@@ -36,6 +36,7 @@ class MapServer {
     // key: map page id, value: png-filename
     this.currentMapFiles = {};
 
+    /*
     // Delete old data
     if (!fs.existsSync(MAP_DATA_DIR)) {
       fs.mkdirSync(MAP_DATA_DIR);
@@ -48,6 +49,7 @@ class MapServer {
         });
       }
     });
+    */
 
 
     // Delete old png map files
@@ -88,7 +90,7 @@ class MapServer {
           const mapPageId = that.getPageIDFromFilename(filename);
 
           //fs.copyFileSync(this.filePath + filename, MAP_DATA_DIR + filename);
-          const stats = fs.statSync(MAP_DATA_DIR + filename);
+          const stats = fs.statSync(Config.mapDataFilePath + filename);
           
           const fileSizeInBytes = stats.size;
 
