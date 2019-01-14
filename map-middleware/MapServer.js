@@ -338,6 +338,7 @@ class MapServer {
       }
 
       const createTestPng = req.query.testPng ? true : false;
+      const randomMode = req.query.random ? true : false;
       
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -346,7 +347,7 @@ class MapServer {
       
       if(this.pathFinder) {
         
-        let cleaningPath = this.pathFinder.getPath(coordinates, createTestPng);
+        let cleaningPath = this.pathFinder.getPath(coordinates, randomMode, createTestPng);
 
         let returnData = { cleaningPath };
   
