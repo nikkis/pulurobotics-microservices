@@ -284,6 +284,18 @@ io.on("connection", (socket) => {
 	var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT_SET, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	robotSocket.write(cmd);
 	io.sockets.emit("command_received", {command: "set_vacuum"});
+
+	if (mode) {
+	    var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 10);
+	    robotSocket.write(cmd);
+	}
+    });
+
+    socket.on("reset_map", () => {
+	console.log("Received reset_map message");
+	var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 10);
+	robotSocket.write(cmd);
+	io.sockets.emit("command_received", {command: "reset_map"});
     });
 });
 

@@ -172,6 +172,27 @@ const robot = {
 		robot.socket.write(cmd);
 	    } else {
 		console.debug("No more waypoints left");
+		if (robot.vacuum_on) {
+		    console.debug("Turning off vacuum");
+		    arg1 = robot.localization_2d ? 1 : 0;
+		    arg2 = robot.localization_3d ? 1 : 0;
+		    arg3 = robot.mapping_2d ? 1 : 0;
+		    arg4 = robot.mapping_3d ? 1 : 0;
+		    arg5 = robot.collision_mapping ? 1 : 0;
+		    arg6 = robot.motors_on ? 1 : 0;
+		    arg7 = robot.autonomous_exploration ? 1 : 0;
+		    arg8 = robot.big_localization_area ? 1: 0;
+		    arg9 = 0;
+		    arg10 = robot.reserved3 ? 1 : 0;
+		    arg11 = robot.reserved4 ? 1 : 0;
+		    arg12 = robot.reserved5 ? 1 : 0;
+		    arg13 = robot.reserved6 ? 1 : 0;
+		    arg14 = robot.reserved7 ? 1 : 0;
+		    arg15 = robot.reserved8 ? 1 : 0;
+		    arg16 = robot.reserved9 ? 1 : 0;
+		    var cmd = Msg.encodeMessage(Msg.TYPE_STATEVECT_SET, "BBBBBBBBBBBBBBBB", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+		    robot.socket.write(cmd);
+		}
 		payload.waypoints_left = false;
 	    }
 	    break;
