@@ -286,6 +286,7 @@ io.on("connection", (socket) => {
 	io.sockets.emit("command_received", {command: "set_vacuum"});
 
 	if (mode) {
+	    console.log("Resetting map");
 	    var cmd = Msg.encodeMessage(Msg.TYPE_MODE, "b", 10);
 	    robotSocket.write(cmd);
 	}
