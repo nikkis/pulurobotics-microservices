@@ -338,7 +338,7 @@ class MapServer {
       }
 
       const createTestPng = req.query.testPng ? true : false;
-      const randomMode = req.query.random ? true : false;
+      const randomMode = req.query.mode && req.query.mode === 'random' ? true : false;
       
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
