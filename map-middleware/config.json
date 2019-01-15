@@ -1,8 +1,8 @@
 {
-  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/constraints/",
+  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/uusikartta/",
   "mapPagesNum": 10,
   "port": 8080,
-  "updateInterval": 1.5,
+  "updateInterval": 8,
   "autoDetect": true,
   "constraintsHeight": 3
 }
