@@ -37,6 +37,7 @@ Each message results in a `command_received` message being sent from the middlew
    * point: {x, y} – x and y must be integers. The unit is mm.
  * set_vacuum(mode): Turn on or off vacuum cleaner. Also lowers nozzle when vacuum is turned on and raises when it is turned off.
    * mode – boolean.
+ * reset_map: Reset markings of how the robot has driven on the map.
 
 Payload objects
 ---------------
