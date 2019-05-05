@@ -1,4 +1,4 @@
-# Microservices for handling commands and map data on Pulurobotics platfroms
+# Microservices for Pulurobotics platfroms
 
 The reporisoty contains:
 - Microservice for relaying commands to Pulurobot platfrom via TCP connection and Socket.IO
