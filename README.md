@@ -1,6 +1,6 @@
-# Microservices for Pulurobotics platfroms
+# Microservices for Pulurobotics platforms
 
-The reporisoty contains:
+The repository contains:
 - Microservice for relaying commands to Pulurobot platfrom via TCP connection and Socket.IO
 - Microservice for transmitting robot's state changes
 - Microservice for observing map data and notifying changes in the map data
