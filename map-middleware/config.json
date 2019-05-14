@@ -1,5 +1,5 @@
 {
-  "mapDataFilePath": "/Users/nikomaki/Devaus/ImuriRobotti/v5/new_map/uusikartta/",
+  "mapDataFilePath": "/home/hrst/maps/",
   "mapPagesNum": 10,
   "port": 8080,
   "updateInterval": 8,
